@@ -1,0 +1,38 @@
+{
+  "type": "Code",
+  "modid": "prospectorsinstinct",
+  "name": "Prospector's Instinct",
+  "authors": ["Cornwall Mods"],
+  "description": "Subtle particles guide you toward nearby ore while using a Prospecting Pick.",
+  "version": "0.1.0",
+  "dependencies": {
+    "game": "1.22.3"
+  }
+}
+{
+  "Enabled": true,
+  "RequireProspectingPick": true,
+  "ScanRadius": 8,
+  "ScanIntervalMs": 500,
+  "ParticleDensity": 1.0,
+
+  "DetectOres": {
+    "Native Copper": true,
+    "Cassiterite": true,
+    "Hematite": true,
+    "Limonite": true,
+    "Magnetite": true,
+    "Sphalerite": true,
+    "Bismuthinite": true,
+    "Galena": true,
+    "Malachite": true,
+    "Gold": true,
+    "Silver": true,
+    "Quartz": false,
+    "Coal": false,
+    "Sulfur": false,
+    "Borax": false,
+    "Saltpeter": false,
+    "Uranium": true
+  }
+}

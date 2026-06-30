@@ -1,0 +1,23 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# User files
+*.user
+*.suo
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+
+# Generated mod zips
+*.zip
