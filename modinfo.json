@@ -9,30 +9,3 @@
     "game": "1.22.3"
   }
 }
-{
-  "Enabled": true,
-  "RequireProspectingPick": true,
-  "ScanRadius": 8,
-  "ScanIntervalMs": 500,
-  "ParticleDensity": 1.0,
-
-  "DetectOres": {
-    "Native Copper": true,
-    "Cassiterite": true,
-    "Hematite": true,
-    "Limonite": true,
-    "Magnetite": true,
-    "Sphalerite": true,
-    "Bismuthinite": true,
-    "Galena": true,
-    "Malachite": true,
-    "Gold": true,
-    "Silver": true,
-    "Quartz": false,
-    "Coal": false,
-    "Sulfur": false,
-    "Borax": false,
-    "Saltpeter": false,
-    "Uranium": true
-  }
-}
