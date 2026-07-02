@@ -13,8 +13,14 @@ public class OreScanner
         api.Logger.Notification("[Prospector's Instinct] OreScanner initialized.");
     }
 
-    public void Scan()
+    public void Start()
     {
-        api.Logger.Notification("[Prospector's Instinct] Scan requested.");
+        api.Event.RegisterGameTickListener(OnScanTick, 500);
+        api.Logger.Notification("[Prospector's Instinct] OreScanner tick listener registered.");
+    }
+
+    private void OnScanTick(float deltaTime)
+    {
+        api.Logger.Notification("[Prospector's Instinct] Scanning tick...");
     }
 }

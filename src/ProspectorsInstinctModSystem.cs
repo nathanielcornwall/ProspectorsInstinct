@@ -15,6 +15,7 @@ public class ProspectorsInstinctModSystem : ModSystem
         Config = ConfigManager.Load(api);
 
         scanner = new OreScanner(api);
+scanner.Start();
 
         api.Logger.Notification("[Prospector's Instinct] Loaded successfully!");
     }
