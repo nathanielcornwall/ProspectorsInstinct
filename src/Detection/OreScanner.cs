@@ -21,6 +21,11 @@ public class OreScanner
 
     private void OnScanTick(float deltaTime)
     {
-        api.Logger.Notification("[Prospector's Instinct] Scanning tick...");
+        if (!ProspectorsInstinctModSystem.Config.Enabled)
+        {
+            return;
+        }
+
+        api.Logger.Notification("[Prospector's Instinct] Scanning...");
     }
 }
