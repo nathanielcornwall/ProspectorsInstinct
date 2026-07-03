@@ -7,6 +7,7 @@ namespace ProspectorsInstinct.Detection;
 public class OreScanner
 {
     private readonly ICoreAPI api;
+    private OreDetector? detector;
 
     public OreScanner(ICoreAPI api)
     {
@@ -19,6 +20,8 @@ public class OreScanner
     {
         if (api.Side == EnumAppSide.Client)
         {
+            detector = new OreDetector((ICoreClientAPI)api);
+
             api.Event.RegisterGameTickListener(OnScanTick, 500);
             api.Logger.Notification("[Prospector's Instinct] Client scanner enabled.");
         }
@@ -45,8 +48,17 @@ public class OreScanner
 
         BlockPos pos = player.Entity.Pos.AsBlockPos;
 
-        api.Logger.Notification(
-            $"[Prospector's Instinct] Player at X:{pos.X} Y:{pos.Y} Z:{pos.Z}"
+        var result = detector?.FindNearestOre(
+            pos,
+            ProspectorsInstinctModSystem.Config.ScanRadius
         );
+
+        if (result != null)
+        {
+            api.Logger.Notification(
+                $"[Prospector's Instinct] Found {result.OreName} " +
+                $"({result.Distance:F1} blocks away)"
+            );
+        }
     }
 }
