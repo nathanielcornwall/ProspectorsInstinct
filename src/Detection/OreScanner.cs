@@ -1,3 +1,5 @@
+using Vintagestory.API.Client;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Common;
 
 namespace ProspectorsInstinct.Detection;
@@ -29,6 +31,22 @@ public class OreScanner
             return;
         }
 
-        api.Logger.Notification("[Prospector's Instinct] Scanning...");
+        if (api is not ICoreClientAPI capi)
+        {
+            return;
+        }
+
+        var player = capi.World.Player;
+
+        if (player?.Entity == null)
+        {
+            return;
+        }
+
+        BlockPos pos = player.Entity.Pos.AsBlockPos;
+
+        api.Logger.Notification(
+            $"[Prospector's Instinct] Player at X:{pos.X} Y:{pos.Y} Z:{pos.Z}"
+        );
     }
 }
