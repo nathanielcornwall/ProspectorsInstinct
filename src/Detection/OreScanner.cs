@@ -15,8 +15,11 @@ public class OreScanner
 
     public void Start()
     {
-        api.Event.RegisterGameTickListener(OnScanTick, 500);
-        api.Logger.Notification("[Prospector's Instinct] OreScanner tick listener registered.");
+        if (api.Side == EnumAppSide.Client)
+        {
+            api.Event.RegisterGameTickListener(OnScanTick, 500);
+            api.Logger.Notification("[Prospector's Instinct] Client scanner enabled.");
+        }
     }
 
     private void OnScanTick(float deltaTime)
