@@ -1,6 +1,6 @@
 using Vintagestory.API.Client;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 
 namespace ProspectorsInstinct.Detection;
 
@@ -56,8 +56,7 @@ public class OreScanner
         if (result != null)
         {
             api.Logger.Notification(
-                $"[Prospector's Instinct] Found {result.OreName} " +
-                $"({result.Distance:F1} blocks away)"
+                $"[Prospector's Instinct] Found {result.OreName} ({result.Distance:F1} blocks away)"
             );
         }
     }
