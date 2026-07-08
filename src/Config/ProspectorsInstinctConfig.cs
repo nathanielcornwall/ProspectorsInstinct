@@ -5,6 +5,7 @@ namespace ProspectorsInstinct.Config;
 public class ProspectorsInstinctConfig
 {
     public bool Enabled { get; set; } = true;
+    public bool DebugMode { get; set; } = true;
     public bool RequireProspectingPick { get; set; } = true;
     public int ScanRadius { get; set; } = 8;
     public int ScanIntervalMs { get; set; } = 500;

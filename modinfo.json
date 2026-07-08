@@ -4,7 +4,7 @@
   "name": "Prospector's Instinct",
   "authors": ["Cornwall Mods"],
   "description": "Subtle particles guide you toward nearby ore while using a Prospecting Pick.",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "dependencies": {
     "game": "1.22.3"
   }
