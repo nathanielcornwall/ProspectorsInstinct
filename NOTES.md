@@ -30,3 +30,14 @@ Located
 - Orbiting particles around the player, indicating they are standing above the ore.
 
 The goal is to make the player feel like they are following an instinct, not a waypoint.
+
+## Design Rule
+
+If the player has to stop and think about what the particles mean,
+the guidance has failed.
+
+The player should instinctively understand:
+
+• Trail = Keep walking.
+
+• Orbit = Dig here.

@@ -1,3 +1,4 @@
+using System;
 using ProspectorsInstinct.Rendering;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -75,10 +76,25 @@ public class OreScanner
         Vec3d playerPos = player.Entity.Pos.XYZ.Add(0, 1.5, 0);
         Vec3d orePos = result.Position.ToVec3d().Add(0.5, 0.5, 0.5);
 
-        Vec3d direction = orePos.SubCopy(playerPos).Normalize();
-        Vec3d particlePos = playerPos.AddCopy(direction.X * 2, direction.Y * 2, direction.Z * 2);
+        double horizontalDistance = Math.Sqrt(
+            Math.Pow(orePos.X - playerPos.X, 2) +
+            Math.Pow(orePos.Z - playerPos.Z, 2)
+        );
 
-        particleGuide?.Spawn(particlePos);
+        bool oreIsBelowPlayer = orePos.Y < playerPos.Y - 1.0;
+        bool playerIsAboveOre = horizontalDistance < 2.0 && oreIsBelowPlayer;
+
+        if (playerIsAboveOre)
+        {
+            particleGuide?.SpawnLocated(player.Entity.Pos.XYZ);
+        }
+        else
+        {
+            Vec3d direction = orePos.SubCopy(playerPos).Normalize();
+            Vec3d particlePos = playerPos.AddCopy(direction.X * 2, direction.Y * 2, direction.Z * 2);
+
+            particleGuide?.Spawn(particlePos);
+        }
     }
 
     private bool HasProspectingPick(ICoreClientAPI capi)
