@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 
@@ -7,6 +8,129 @@ namespace ProspectorsInstinct.Detection;
 public class OreDetector
 {
     private readonly ICoreClientAPI capi;
+
+    private static readonly Dictionary<string, string[]> OreAliases =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Native Copper"] = new[]
+            {
+                "nativecopper",
+                "copper"
+            },
+
+            ["Cassiterite"] = new[]
+            {
+                "cassiterite"
+            },
+
+            ["Hematite"] = new[]
+            {
+                "hematite"
+            },
+
+            ["Limonite"] = new[]
+            {
+                "limonite"
+            },
+
+            ["Magnetite"] = new[]
+            {
+                "magnetite"
+            },
+
+            ["Meteoric Iron"] = new[]
+            {
+                "meteoriciron",
+                "meteoriteiron",
+                "ironmeteorite",
+                "meteorite"
+            },
+
+            ["Bog Iron"] = new[]
+            {
+                "bogiron",
+                "ironbog"
+            },
+
+            ["Sphalerite"] = new[]
+            {
+                "sphalerite"
+            },
+
+            ["Smithsonite"] = new[]
+            {
+                "smithsonite"
+            },
+
+            ["Bismuthinite"] = new[]
+            {
+                "bismuthinite"
+            },
+
+            ["Galena"] = new[]
+            {
+                "galena"
+            },
+
+            ["Cerussite"] = new[]
+            {
+                "cerussite"
+            },
+
+            ["Malachite"] = new[]
+            {
+                "malachite"
+            },
+
+            ["Gold"] = new[]
+            {
+                "gold"
+            },
+
+            ["Silver"] = new[]
+            {
+                "silver"
+            },
+
+            ["Uranium"] = new[]
+            {
+                "uranium"
+            },
+
+            ["Lignite"] = new[]
+            {
+                "lignite",
+                "browncoal"
+            },
+
+            ["Quartz"] = new[]
+            {
+                "quartz"
+            },
+
+            ["Coal"] = new[]
+            {
+                "coal",
+                "bituminous"
+            },
+
+            ["Sulfur"] = new[]
+            {
+                "sulfur",
+                "sulphur"
+            },
+
+            ["Borax"] = new[]
+            {
+                "borax"
+            },
+
+            ["Saltpeter"] = new[]
+            {
+                "saltpeter",
+                "saltpetre"
+            }
+        };
 
     public OreDetector(ICoreClientAPI capi)
     {
@@ -39,7 +163,7 @@ public class OreDetector
                         continue;
                     }
 
-                    string blockPath = block.Code.Path.ToLowerInvariant();
+                    string blockPath = Normalize(block.Code.Path);
 
                     foreach (var oreEntry in ProspectorsInstinctModSystem.Config.DetectOres)
                     {
@@ -48,11 +172,7 @@ public class OreDetector
                             continue;
                         }
 
-                        string oreKey = oreEntry.Key
-                            .Replace(" ", "")
-                            .ToLowerInvariant();
-
-                        if (!blockPath.Contains(oreKey))
+                        if (!MatchesOre(blockPath, oreEntry.Key))
                         {
                             continue;
                         }
@@ -74,5 +194,33 @@ public class OreDetector
         }
 
         return nearest;
+    }
+
+    private static bool MatchesOre(string normalizedBlockPath, string oreName)
+    {
+        if (OreAliases.TryGetValue(oreName, out string[]? aliases))
+        {
+            foreach (string alias in aliases)
+            {
+                if (normalizedBlockPath.Contains(Normalize(alias)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Fallback for custom config entries or modded ores.
+        return normalizedBlockPath.Contains(Normalize(oreName));
+    }
+
+    private static string Normalize(string value)
+    {
+        return value
+            .Replace(" ", "")
+            .Replace("-", "")
+            .Replace("_", "")
+            .ToLowerInvariant();
     }
 }
