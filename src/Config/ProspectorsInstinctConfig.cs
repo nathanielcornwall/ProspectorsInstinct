@@ -35,9 +35,9 @@ public class ProspectorsInstinctConfig
 
     ["Lignite"] = true,
 
-    ["Quartz"] = false,
+    ["Quartz"] = true,
     ["Coal"] = false,
-    ["Sulfur"] = false,
+    ["Sulfur"] = true,
     ["Borax"] = false,
     ["Saltpeter"] = false
 };

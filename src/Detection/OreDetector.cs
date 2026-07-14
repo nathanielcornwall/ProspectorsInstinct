@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ProspectorsInstinct.OreDatabase.Models;
 using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 
@@ -8,6 +9,7 @@ namespace ProspectorsInstinct.Detection;
 public class OreDetector
 {
     private readonly ICoreClientAPI capi;
+    private readonly Func<IReadOnlyDictionary<int, OreInfo>> oreDatabaseProvider;
 
     private static readonly Dictionary<string, string[]> OreAliases =
         new(StringComparer.OrdinalIgnoreCase)
@@ -132,15 +134,24 @@ public class OreDetector
             }
         };
 
-    public OreDetector(ICoreClientAPI capi)
+    public OreDetector(
+        ICoreClientAPI capi,
+        Func<IReadOnlyDictionary<int, OreInfo>> oreDatabaseProvider)
     {
-        this.capi = capi;
+        this.capi = capi
+            ?? throw new ArgumentNullException(nameof(capi));
+
+        this.oreDatabaseProvider = oreDatabaseProvider
+            ?? throw new ArgumentNullException(nameof(oreDatabaseProvider));
     }
 
     public OreScanResult? FindNearestOre(BlockPos playerPos, int radius)
     {
         OreScanResult? nearest = null;
         int radiusSq = radius * radius;
+
+        IReadOnlyDictionary<int, OreInfo> oreDatabase =
+            oreDatabaseProvider();
 
         for (int x = -radius; x <= radius; x++)
         {
@@ -163,31 +174,45 @@ public class OreDetector
                         continue;
                     }
 
-                    string blockPath = Normalize(block.Code.Path);
+                    string? oreName = null;
 
-                    foreach (var oreEntry in ProspectorsInstinctModSystem.Config.DetectOres)
+                    // Preferred v0.7.0 path:
+                    // perform a fast lookup using the generated Ore Database.
+                    if (oreDatabase.TryGetValue(
+                            block.BlockId,
+                            out OreInfo? oreInfo))
                     {
-                        if (!oreEntry.Value)
+                        if (!TryResolveConfiguredOre(
+                                oreInfo.Mineral,
+                                out oreName))
                         {
                             continue;
                         }
+                    }
+                    else
+                    {
+                        // Temporary compatibility fallback for special blocks
+                        // that do not use the structured "ore-" format.
+                        string blockPath = Normalize(block.Code.Path);
 
-                        if (!MatchesOre(blockPath, oreEntry.Key))
+                        if (!TryResolveConfiguredOre(
+                                blockPath,
+                                out oreName))
                         {
                             continue;
                         }
+                    }
 
-                        double distance = Math.Sqrt(distSq);
+                    double distance = Math.Sqrt(distSq);
 
-                        if (nearest == null || distance < nearest.Distance)
-                        {
-                            nearest = new OreScanResult(
-                                checkPos.Copy(),
-                                oreEntry.Key,
-                                block.Code.ToString(),
-                                distance
-                            );
-                        }
+                    if (nearest == null || distance < nearest.Distance)
+                    {
+                        nearest = new OreScanResult(
+                            checkPos.Copy(),
+                            oreName,
+                            block.Code.ToString(),
+                            distance
+                        );
                     }
                 }
             }
@@ -196,13 +221,44 @@ public class OreDetector
         return nearest;
     }
 
-    private static bool MatchesOre(string normalizedBlockPath, string oreName)
+    private static bool TryResolveConfiguredOre(
+        string value,
+        out string oreName)
     {
-        if (OreAliases.TryGetValue(oreName, out string[]? aliases))
+        string normalizedValue = Normalize(value);
+
+        foreach (var oreEntry in
+                 ProspectorsInstinctModSystem.Config.DetectOres)
+        {
+            if (!oreEntry.Value)
+            {
+                continue;
+            }
+
+            if (!MatchesOre(normalizedValue, oreEntry.Key))
+            {
+                continue;
+            }
+
+            oreName = oreEntry.Key;
+            return true;
+        }
+
+        oreName = string.Empty;
+        return false;
+    }
+
+    private static bool MatchesOre(
+        string normalizedValue,
+        string oreName)
+    {
+        if (OreAliases.TryGetValue(
+                oreName,
+                out string[]? aliases))
         {
             foreach (string alias in aliases)
             {
-                if (normalizedBlockPath.Contains(Normalize(alias)))
+                if (normalizedValue.Contains(Normalize(alias)))
                 {
                     return true;
                 }
@@ -211,8 +267,8 @@ public class OreDetector
             return false;
         }
 
-        // Fallback for custom config entries or modded ores.
-        return normalizedBlockPath.Contains(Normalize(oreName));
+        // Supports custom configuration entries and modded minerals.
+        return normalizedValue.Contains(Normalize(oreName));
     }
 
     private static string Normalize(string value)
