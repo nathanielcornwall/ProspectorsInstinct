@@ -55,6 +55,12 @@ public class ProspectorsInstinctModSystem : ModSystem
                 "with {0} entries.",
                 oreDatabase.Count
             );
+
+            if (api.Side == EnumAppSide.Client)
+            {
+                var exporter = new OreDatabaseExporter(api);
+                exporter.Export(oreDatabase);
+            }
         }
         catch (Exception exception)
         {
