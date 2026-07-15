@@ -2,9 +2,12 @@
   "type": "Code",
   "modid": "prospectorsinstinct",
   "name": "Prospector's Instinct",
-  "authors": ["Cornwall Mods"],
-  "description": "Subtle particles guide you toward nearby ore while using a Prospecting Pick.",
-  "version": "0.6.0",
+  "authors": [
+    "Cornwall Mods"
+  ],
+  "description": "A lightweight prospecting assistant that provides subtle particle guidance toward nearby ore while using a Prospecting Pick.",
+  "website": "https://github.com/nathanielcornwall/ProspectorsInstinct",
+  "version": "0.7.0",
   "dependencies": {
     "game": "1.22.3"
   }

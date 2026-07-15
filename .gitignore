@@ -450,3 +450,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Local packaging and testing
+ModDBPackage/
+ZipTest/

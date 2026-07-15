@@ -1,23 +1,38 @@
 # Changelog
 
+All notable changes to Prospector's Instinct will be documented in this file.
+
+---
+
+## v0.7.0
+
+### Added
+
+- Runtime Ore Database
+- Automatic ore parsing during startup
+- OreDatabase.json diagnostic export
+- GitHub Issue Tracker with issue templates
+- Improved Runtime compatibility system
+
+### Improved
+
+- Simplified ore detection architecture
+- Reduced hardcoded ore mappings
+- Better compatibility with Quartz, Sulfur, Lignite, Coal and other ores
+- Cleaner scanner implementation
+- Improved project documentation
+
+### Fixed
+
+- Multiple ore detection edge cases
+- Improved scanner reliability
+- Various internal stability improvements
+
+---
+
 ## v0.6.0 Beta
 
-### New
-- Initial public beta release.
-- Detects nearby ore while holding a Prospecting Pick.
-- Subtle particle guidance toward the nearest detected ore.
-- Located Mode that changes guidance when standing above ore.
-- Terrain-aware particle positioning to reduce particles spawning inside blocks.
-- Configurable scan radius and supported ore types.
-- Optional debug mode.
-- Multiplayer compatible (client-side).
-
-### Improvements
-- Improved particle positioning.
-- Guidance only activates while holding a Prospecting Pick.
-- Better overall particle visibility.
-- Performance optimizations during scanning.
-
-### Known Issues
-- Located Mode will continue to receive visual improvements.
-- Particle transitions are still being refined.
+- Initial public beta release
+- Particle guidance system
+- Configurable ore detection
+- Prospecting Pick integration
