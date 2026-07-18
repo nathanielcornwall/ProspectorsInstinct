@@ -3,9 +3,10 @@ namespace ProspectorsInstinct.Metadata;
 public enum OreCategory
 {
     Metal,
-    PreciousMetal,
-    Industrial,
-    Fuel,
-    Gemstone,
-    Misc
+PreciousMetal,
+Industrial,
+Chemical,
+Fuel,
+Gemstone,
+Misc
 }
