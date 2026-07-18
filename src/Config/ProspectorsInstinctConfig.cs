@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using ProspectorsInstinct.Metadata;
 
 namespace ProspectorsInstinct.Config;
 
@@ -11,34 +13,11 @@ public class ProspectorsInstinctConfig
     public int ScanIntervalMs { get; set; } = 500;
     public float ParticleDensity { get; set; } = 1.0f;
 
-    public Dictionary<string, bool> DetectOres { get; set; } = new()
-{
-    ["Native Copper"] = true,
-    ["Cassiterite"] = true,
-
-    ["Hematite"] = true,
-    ["Limonite"] = true,
-    ["Magnetite"] = true,
-    ["Meteoric Iron"] = true,
-    ["Bog Iron"] = true,
-
-    ["Sphalerite"] = true,
-    ["Smithsonite"] = true,
-    ["Bismuthinite"] = true,
-    ["Galena"] = true,
-    ["Cerussite"] = true,
-    ["Malachite"] = true,
-
-    ["Gold"] = true,
-    ["Silver"] = true,
-    ["Uranium"] = true,
-
-    ["Lignite"] = true,
-
-    ["Quartz"] = true,
-    ["Coal"] = false,
-    ["Sulfur"] = true,
-    ["Borax"] = false,
-    ["Saltpeter"] = false
-};
+    public Dictionary<string, bool> DetectOres { get; set; } =
+        OreMetadataProvider
+            .GetAll()
+            .ToDictionary(
+                ore => ore.DisplayName,
+                ore => ore.EnabledByDefault
+            );
 }
