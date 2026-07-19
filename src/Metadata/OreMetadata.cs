@@ -23,4 +23,15 @@ public class OreMetadata
     /// Whether the ore should be enabled in a newly created config.
     /// </summary>
     public bool EnabledByDefault { get; init; } = true;
+
+    /// <summary>
+    /// Indicates this metadata entry exists only as an alias
+    /// and is not expected to appear in the runtime ore database.
+    /// </summary>
+    public bool IsAlias { get; init; } = false;
+
+    /// <summary>
+    /// Alternative names that should resolve to this ore.
+    /// </summary>
+
 }

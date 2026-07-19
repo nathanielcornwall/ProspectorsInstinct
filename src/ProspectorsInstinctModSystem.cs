@@ -50,6 +50,10 @@ public class ProspectorsInstinctModSystem : ModSystem
             var builder = new OreDatabaseBuilder(api);
             oreDatabase = builder.Build();
 
+            Metadata.MetadataValidator.Validate(
+    api,
+    oreDatabase);
+
             api.Logger.Notification(
                 "[Prospector's Instinct] Runtime Ore Database ready " +
                 "with {0} entries.",

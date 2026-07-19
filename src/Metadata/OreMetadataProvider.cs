@@ -43,18 +43,20 @@ public static class OreMetadataProvider
             },
 
             ["meteoriciron"] = new OreMetadata
-            {
-                RuntimeName = "meteoriciron",
-                DisplayName = "Meteoric Iron",
-                Category = OreCategory.Metal
-            },
+{
+    RuntimeName = "meteoriciron",
+    DisplayName = "Meteoric Iron",
+    Category = OreCategory.Metal,
+    IsAlias = true
+},
 
             ["bogiron"] = new OreMetadata
-            {
-                RuntimeName = "bogiron",
-                DisplayName = "Bog Iron",
-                Category = OreCategory.Metal
-            },
+{
+    RuntimeName = "bogiron",
+    DisplayName = "Bog Iron",
+    Category = OreCategory.Metal,
+    IsAlias = true
+},
 
             ["sphalerite"] = new OreMetadata
             {
@@ -104,6 +106,13 @@ public static class OreMetadataProvider
                 DisplayName = "Azurite",
                 Category = OreCategory.Metal
             },
+
+            ["cinnabar"] = new OreMetadata
+{
+    RuntimeName = "cinnabar",
+    DisplayName = "Cinnabar",
+    Category = OreCategory.Metal
+},
 
             ["chalcopyrite"] = new OreMetadata
             {
@@ -204,11 +213,12 @@ public static class OreMetadataProvider
             },
 
             ["nativegold"] = new OreMetadata
-            {
-                RuntimeName = "nativegold",
-                DisplayName = "Gold",
-                Category = OreCategory.PreciousMetal
-            },
+{
+    RuntimeName = "nativegold",
+    DisplayName = "Gold",
+    Category = OreCategory.PreciousMetal,
+    IsAlias = true
+},
 
             ["nativesilver"] = new OreMetadata
             {
@@ -238,12 +248,20 @@ public static class OreMetadataProvider
                 Category = OreCategory.PreciousMetal
             },
 
-            ["quartz_nativesilver"] = new OreMetadata
-            {
-                RuntimeName = "quartz_nativesilver",
-                DisplayName = "Silver-Bearing Quartz",
-                Category = OreCategory.PreciousMetal
-            },
+["nativesilver"] = new OreMetadata
+{
+    RuntimeName = "nativesilver",
+    DisplayName = "Silver",
+    Category = OreCategory.PreciousMetal,
+    IsAlias = true
+},
+
+["quartz_nativesilver"] = new OreMetadata
+{
+    RuntimeName = "quartz_nativesilver",
+    DisplayName = "Silver-Bearing Quartz",
+    Category = OreCategory.PreciousMetal
+},
 
             ["sperrylite"] = new OreMetadata
             {
@@ -322,13 +340,6 @@ public static class OreMetadataProvider
     Category = OreCategory.Chemical
 },
 
-["seabed"] = new OreMetadata
-{
-    RuntimeName = "seabed",
-    DisplayName = "Seabed Deposit",
-    Category = OreCategory.Misc
-},
-
             ["quartz"] = new OreMetadata
             {
                 RuntimeName = "quartz",
@@ -337,12 +348,13 @@ public static class OreMetadataProvider
             },
 
             ["coal"] = new OreMetadata
-            {
-                RuntimeName = "coal",
-                DisplayName = "Coal",
-                Category = OreCategory.Fuel,
-                EnabledByDefault = false
-            },
+{
+    RuntimeName = "coal",
+    DisplayName = "Coal",
+    Category = OreCategory.Fuel,
+    EnabledByDefault = false,
+    IsAlias = true
+},
 
             ["sulfur"] = new OreMetadata
             {
@@ -360,14 +372,13 @@ public static class OreMetadataProvider
             },
 
             ["saltpeter"] = new OreMetadata
-            {
-                RuntimeName = "saltpeter",
-                DisplayName = "Saltpeter",
-                Category = OreCategory.Chemical,
-                EnabledByDefault = false
-            }
-
-            ,
+{
+    RuntimeName = "saltpeter",
+    DisplayName = "Saltpeter",
+    Category = OreCategory.Chemical,
+    EnabledByDefault = false,
+    IsAlias = true
+},
 
             ["berylaquamarine"] = new OreMetadata
 {
@@ -543,7 +554,7 @@ public static class OreMetadataProvider
     DisplayName = "Watermelon Tourmaline",
     Category = OreCategory.Gemstone
 },
-        };
+                };
 
     public static OreMetadata Get(string runtimeName)
     {
@@ -565,5 +576,7 @@ public static class OreMetadataProvider
     public static IReadOnlyCollection<OreMetadata> GetAll()
     {
         return metadata.Values;
+
+        
     }
 }
