@@ -98,6 +98,111 @@ public static class OreMetadataProvider
                 Category = OreCategory.Metal
             },
 
+            ["azurite"] = new OreMetadata
+            {
+                RuntimeName = "azurite",
+                DisplayName = "Azurite",
+                Category = OreCategory.Metal
+            },
+
+            ["chalcopyrite"] = new OreMetadata
+            {
+                RuntimeName = "chalcopyrite",
+                DisplayName = "Chalcopyrite",
+                Category = OreCategory.Metal
+            },
+
+            ["chromite"] = new OreMetadata
+            {
+                RuntimeName = "chromite",
+                DisplayName = "Chromite",
+                Category = OreCategory.Metal
+            },
+
+            ["chalcocite"] = new OreMetadata
+            {
+                RuntimeName = "chalcocite",
+                DisplayName = "Chalcocite",
+                Category = OreCategory.Metal
+            },
+
+            ["freibergite"] = new OreMetadata
+            {
+                RuntimeName = "freibergite",
+                DisplayName = "Freibergite",
+                Category = OreCategory.Metal
+            },
+
+            ["ilmenite"] = new OreMetadata
+            {
+                RuntimeName = "ilmenite",
+                DisplayName = "Ilmenite",
+                Category = OreCategory.Metal
+            },
+
+            ["pentlandite"] = new OreMetadata
+            {
+                RuntimeName = "pentlandite",
+                DisplayName = "Pentlandite",
+                Category = OreCategory.Metal
+            },
+
+            ["teallite"] = new OreMetadata
+            {
+                RuntimeName = "teallite",
+                DisplayName = "Teallite",
+                Category = OreCategory.Metal
+            },
+
+            ["tetrahedrite"] = new OreMetadata
+            {
+                RuntimeName = "tetrahedrite",
+                DisplayName = "Tetrahedrite",
+                Category = OreCategory.Metal
+            },
+
+            ["pyrite"] = new OreMetadata
+            {
+                RuntimeName = "pyrite",
+                DisplayName = "Pyrite",
+                Category = OreCategory.Industrial
+            },
+
+            ["franckeite"] = new OreMetadata
+            {
+                RuntimeName = "franckeite",
+                DisplayName = "Franckeite",
+                Category = OreCategory.Industrial
+            },
+
+            ["hemimorphite"] = new OreMetadata
+            {
+                RuntimeName = "hemimorphite",
+                DisplayName = "Hemimorphite",
+                Category = OreCategory.Industrial
+            },
+
+            ["rhodochrosite"] = new OreMetadata
+            {
+                RuntimeName = "rhodochrosite",
+                DisplayName = "Rhodochrosite",
+                Category = OreCategory.Industrial
+            },
+
+            ["vanadinite"] = new OreMetadata
+            {
+                RuntimeName = "vanadinite",
+                DisplayName = "Vanadinite",
+                Category = OreCategory.Industrial
+            },
+
+            ["wulfenite"] = new OreMetadata
+            {
+                RuntimeName = "wulfenite",
+                DisplayName = "Wulfenite",
+                Category = OreCategory.Industrial
+            },
+
             ["nativegold"] = new OreMetadata
             {
                 RuntimeName = "nativegold",
@@ -109,6 +214,41 @@ public static class OreMetadataProvider
             {
                 RuntimeName = "nativesilver",
                 DisplayName = "Silver",
+                Category = OreCategory.PreciousMetal
+            },
+
+            ["galena_nativesilver"] = new OreMetadata
+            {
+                RuntimeName = "galena_nativesilver",
+                DisplayName = "Silver-Bearing Galena",
+                Category = OreCategory.PreciousMetal
+            },
+
+            ["nativeplatinum"] = new OreMetadata
+            {
+                RuntimeName = "nativeplatinum",
+                DisplayName = "Native Platinum",
+                Category = OreCategory.PreciousMetal
+            },
+
+            ["quartz_nativegold"] = new OreMetadata
+            {
+                RuntimeName = "quartz_nativegold",
+                DisplayName = "Gold-Bearing Quartz",
+                Category = OreCategory.PreciousMetal
+            },
+
+            ["quartz_nativesilver"] = new OreMetadata
+            {
+                RuntimeName = "quartz_nativesilver",
+                DisplayName = "Silver-Bearing Quartz",
+                Category = OreCategory.PreciousMetal
+            },
+
+            ["sperrylite"] = new OreMetadata
+            {
+                RuntimeName = "sperrylite",
+                DisplayName = "Sperrylite",
                 Category = OreCategory.PreciousMetal
             },
 
@@ -167,7 +307,9 @@ public static class OreMetadataProvider
 
     public static OreMetadata Get(string runtimeName)
     {
-        if (metadata.TryGetValue(runtimeName.ToLowerInvariant(), out OreMetadata? ore))
+        if (metadata.TryGetValue(
+                runtimeName.ToLowerInvariant(),
+                out OreMetadata? ore))
         {
             return ore;
         }
