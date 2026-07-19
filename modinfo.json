@@ -7,7 +7,7 @@
   ],
   "description": "A lightweight prospecting assistant that provides subtle particle guidance toward nearby ore while using a Prospecting Pick.",
   "website": "https://github.com/nathanielcornwall/ProspectorsInstinct",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "dependencies": {
     "game": "1.22.3"
   }
