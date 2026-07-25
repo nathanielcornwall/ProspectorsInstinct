@@ -454,3 +454,4 @@ FodyWeavers.xsd
 # Local packaging and testing
 ModDBPackage/
 ZipTest/
+ReleasePackage/
