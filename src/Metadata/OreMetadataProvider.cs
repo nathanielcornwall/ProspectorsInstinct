@@ -220,13 +220,6 @@ public static class OreMetadataProvider
     IsAlias = true
 },
 
-            ["nativesilver"] = new OreMetadata
-            {
-                RuntimeName = "nativesilver",
-                DisplayName = "Silver",
-                Category = OreCategory.PreciousMetal
-            },
-
             ["galena_nativesilver"] = new OreMetadata
             {
                 RuntimeName = "galena_nativesilver",
