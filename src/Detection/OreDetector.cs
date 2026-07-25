@@ -105,28 +105,44 @@ public class OreDetector
                         continue;
                     }
 
-                    string? oreName;
+string oreName;
 
-                    if (oreDatabase.TryGetValue(
-                            block.BlockId,
-                            out OreInfo? oreInfo))
-                    {
-                        if (!TryResolveConfiguredOre(
-                                oreInfo.Mineral,
-                                out oreName))
-                        {
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        if (!TryResolveConfiguredOre(
-                                block.Code.Path,
-                                out oreName))
-                        {
-                            continue;
-                        }
-                    }
+if (oreDatabase.TryGetValue(
+        block.BlockId,
+        out OreInfo? oreInfo))
+{
+    if (!TryResolveConfiguredOre(
+            oreInfo.Mineral,
+            out oreName))
+    {
+        continue;
+    }
+}
+else
+{
+    string specialMineral;
+
+    switch (block.Code.Path.ToLowerInvariant())
+    {
+        case "bogiron":
+            specialMineral = "bogiron";
+            break;
+
+        case "meteorite-iron":
+            specialMineral = "meteoriteiron";
+            break;
+
+        default:
+            continue;
+    }
+
+    if (!TryResolveConfiguredOre(
+            specialMineral,
+            out oreName))
+    {
+        continue;
+    }
+}
 
                     double distance = Math.Sqrt(distSq);
 
