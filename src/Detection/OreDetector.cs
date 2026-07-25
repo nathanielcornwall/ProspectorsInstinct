@@ -105,44 +105,54 @@ public class OreDetector
                         continue;
                     }
 
-string oreName;
+                    string oreName;
 
-if (oreDatabase.TryGetValue(
-        block.BlockId,
-        out OreInfo? oreInfo))
-{
-    if (!TryResolveConfiguredOre(
-            oreInfo.Mineral,
-            out oreName))
-    {
-        continue;
-    }
-}
-else
-{
-    string specialMineral;
+                    if (oreDatabase.TryGetValue(
+                            block.BlockId,
+                            out OreInfo? oreInfo))
+                    {
+                        if (!TryResolveConfiguredOre(
+                                oreInfo.Mineral,
+                                out oreName))
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        string specialMineral;
+                        string specialPath =
+                            block.Code.Path.ToLowerInvariant();
 
-    switch (block.Code.Path.ToLowerInvariant())
-    {
-        case "bogiron":
-            specialMineral = "bogiron";
-            break;
+                        switch (specialPath)
+                        {
+                            case "bogiron":
+                                specialMineral = "bogiron";
+                                break;
 
-        case "meteorite-iron":
-            specialMineral = "meteoriteiron";
-            break;
+                            case "meteorite-iron":
+                                specialMineral = "meteoriteiron";
+                                break;
 
-        default:
-            continue;
-    }
+                            default:
+                                if (specialPath.StartsWith(
+                                        "saltpeter-",
+                                        StringComparison.OrdinalIgnoreCase))
+                                {
+                                    specialMineral = "saltpeter";
+                                    break;
+                                }
 
-    if (!TryResolveConfiguredOre(
-            specialMineral,
-            out oreName))
-    {
-        continue;
-    }
-}
+                                continue;
+                        }
+
+                        if (!TryResolveConfiguredOre(
+                                specialMineral,
+                                out oreName))
+                        {
+                            continue;
+                        }
+                    }
 
                     double distance = Math.Sqrt(distSq);
 
