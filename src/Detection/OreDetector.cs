@@ -107,52 +107,53 @@ public class OreDetector
 
                     string oreName;
 
-                    if (oreDatabase.TryGetValue(
-                            block.BlockId,
-                            out OreInfo? oreInfo))
+                if (oreDatabase.TryGetValue(
+                        block.BlockId,
+                        out OreInfo? oreInfo))
+                {
+                    if (!TryResolveConfiguredOre(
+                            oreInfo.Mineral,
+                            out oreName))
                     {
-                        if (!TryResolveConfiguredOre(
-                                oreInfo.Mineral,
-                                out oreName))
-                        {
-                            continue;
-                        }
+                        continue;
                     }
-                    else
+
+                }
+                else
+                {
+                    string specialMineral;
+                    string specialPath =
+                        block.Code.Path.ToLowerInvariant();
+
+                    switch (specialPath)
                     {
-                        string specialMineral;
-                        string specialPath =
-                            block.Code.Path.ToLowerInvariant();
+                        case "bogiron":
+                            specialMineral = "bogiron";
+                            break;
 
-                        switch (specialPath)
-                        {
-                            case "bogiron":
-                                specialMineral = "bogiron";
+                        case "meteorite-iron":
+                            specialMineral = "meteoriteiron";
+                            break;
+
+                        default:
+                            if (specialPath.StartsWith(
+                                    "saltpeter-",
+                                    StringComparison.OrdinalIgnoreCase))
+                            {
+                                specialMineral = "saltpeter";
                                 break;
+                            }
 
-                            case "meteorite-iron":
-                                specialMineral = "meteoriteiron";
-                                break;
-
-                            default:
-                                if (specialPath.StartsWith(
-                                        "saltpeter-",
-                                        StringComparison.OrdinalIgnoreCase))
-                                {
-                                    specialMineral = "saltpeter";
-                                    break;
-                                }
-
-                                continue;
-                        }
-
-                        if (!TryResolveConfiguredOre(
-                                specialMineral,
-                                out oreName))
-                        {
                             continue;
-                        }
                     }
+
+                    if (!TryResolveConfiguredOre(
+                            specialMineral,
+                            out oreName))
+                    {
+                        continue;
+                    }
+                }
 
                     double distance = Math.Sqrt(distSq);
 
@@ -204,28 +205,43 @@ public class OreDetector
     }
 
     private static bool MatchesConfiguredOre(
-        string normalizedValue,
-        string configuredOreName)
-    {
-        if (ConfigMineralAliases.TryGetValue(
-                configuredOreName,
-                out string[]? aliases))
-        {
-            foreach (string alias in aliases)
-            {
-                if (normalizedValue.Contains(
-                        Normalize(alias)))
-                {
-                    return true;
-                }
-            }
+    string normalizedValue,
+    string configuredOreName)
+{
+    string normalizedConfiguredName =
+        Normalize(configuredOreName);
 
-            return false;
+    // Compound ores must resolve to the actual resource,
+    // not the material/host prefix.
+    if (normalizedValue.Contains("nativegold"))
+    {
+        return normalizedConfiguredName == "gold";
+    }
+
+    if (normalizedValue.Contains("nativesilver"))
+    {
+        return normalizedConfiguredName == "silver";
+    }
+
+    if (ConfigMineralAliases.TryGetValue(
+            configuredOreName,
+            out string[]? aliases))
+    {
+        foreach (string alias in aliases)
+        {
+            if (normalizedValue.Contains(
+                    Normalize(alias)))
+            {
+                return true;
+            }
         }
 
-        return normalizedValue.Contains(
-            Normalize(configuredOreName));
+        return false;
     }
+
+    return normalizedValue.Contains(
+        normalizedConfiguredName);
+}
 
     private static string Normalize(string value)
     {
