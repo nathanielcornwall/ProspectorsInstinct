@@ -12,7 +12,7 @@ if ($LASTEXITCODE -ne 0)
     exit
 }
 
-$zipName = "ProspectorsInstinct_0.8.0.zip"
+$zipName = "ProspectorsInstinct_0.9.0.zip"
 
 # Delete previous package
 if (Test-Path $zipName)
