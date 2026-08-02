@@ -6,6 +6,9 @@ using ProspectorsInstinct.OreDatabase.Diagnostics;
 using ProspectorsInstinct.OreDatabase.Models;
 using ProspectorsInstinct.OreDatabase.Services;
 using Vintagestory.API.Common;
+using ProspectorsInstinct.Gui;
+using Vintagestory.API.Client;
+
 
 namespace ProspectorsInstinct;
 
@@ -21,9 +24,11 @@ public class ProspectorsInstinctModSystem : ModSystem
         new Dictionary<int, OreInfo>();
 
     private OreScanner? scanner;
+    private GuiDialogProspectorsInstinct? configDialog;
 
     public override void Start(ICoreAPI api)
     {
+
         Config = ConfigManager.Load(api);
 
         scanner = new OreScanner(
@@ -36,7 +41,37 @@ public class ProspectorsInstinctModSystem : ModSystem
         api.Logger.Notification(
             "[Prospector's Instinct] Loaded successfully!"
         );
+
     }
+
+    public override void StartClientSide(
+    ICoreClientAPI capi)
+{
+    base.StartClientSide(capi);
+
+    capi.Input.RegisterHotKey(
+        "prospectorsinstinct-config",
+        "Open Prospector's Instinct configuration",
+        GlKeys.P,
+        HotkeyType.GUIOrOtherControls
+    );
+
+    capi.Input.SetHotKeyHandler(
+        "prospectorsinstinct-config",
+        _ =>
+        {
+            configDialog ??=
+                new GuiDialogProspectorsInstinct(capi);
+
+            configDialog.Toggle();
+            return true;
+        }
+    );
+
+    capi.Logger.Notification(
+        "[Prospector's Instinct] Configuration hotkey registered."
+    );
+}
 
     public override void AssetsFinalize(ICoreAPI api)
     {

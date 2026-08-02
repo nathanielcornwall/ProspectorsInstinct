@@ -179,13 +179,6 @@ ElementBounds debugSwitchBounds =
         40,
         30);
 
-        ElementBounds detectionHeaderBounds =
-    ElementBounds.Fixed(
-        20,
-        430,
-        300,
-        30);
-
 // ---------- Buttons ----------
 
 ElementBounds saveButtonBounds =
@@ -257,10 +250,6 @@ ElementBounds cancelButtonBounds =
                 OnDebugModeChanged,
                 debugSwitchBounds,
                 "debugModeSwitch")
-                .AddStaticText(
-                "Detection",
-                CairoFont.WhiteSmallishText(),
-                detectionHeaderBounds)
             .AddSmallButton(
                 "Save",
                 OnSaveClicked,

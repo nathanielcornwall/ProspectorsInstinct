@@ -18,10 +18,15 @@ public class ParticleGuide
     {
         Vec3d visiblePosition = FindVisiblePosition(desiredPosition);
 
-        var particle = new SimpleParticleProperties
-        {
-            MinQuantity = 3,
-            AddQuantity = 2,
+        float density = Math.Clamp(
+    ProspectorsInstinctModSystem.Config.ParticleDensity,
+    0.1f,
+    2.0f);
+
+var particle = new SimpleParticleProperties
+{
+    MinQuantity = 3 * density,
+    AddQuantity = 2 * density,
 
             MinPos = visiblePosition,
             AddPos = new Vec3d(0.15, 0.15, 0.15),

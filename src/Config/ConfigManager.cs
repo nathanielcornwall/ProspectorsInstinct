@@ -37,4 +37,16 @@ public static class ConfigManager
 
         return config;
     }
+    public static void Save(
+    ICoreAPI api,
+    ProspectorsInstinctConfig config)
+{
+    api.StoreModConfig(
+        config,
+        ConfigFileName);
+
+    api.Logger.Notification(
+        "[Prospector's Instinct] Config saved."
+    );
+}
 }
