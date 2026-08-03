@@ -92,7 +92,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             0,
             0,
             560,
-            700)
+            600)
                 .WithFixedPadding(
                     GuiStyle.ElementToDialogPadding);
 
@@ -179,19 +179,26 @@ ElementBounds debugSwitchBounds =
         40,
         30);
 
+        ElementBounds detectionButtonBounds =
+    ElementBounds.Fixed(
+        20,
+        445,
+        500,
+        40);
+
 // ---------- Buttons ----------
 
 ElementBounds saveButtonBounds =
     ElementBounds.Fixed(
         330,
-        650,
+        545,
         90,
         35);
 
 ElementBounds cancelButtonBounds =
     ElementBounds.Fixed(
         430,
-        650,
+        545,
         90,
         35);
 
@@ -249,7 +256,11 @@ ElementBounds cancelButtonBounds =
             .AddSwitch(
                 OnDebugModeChanged,
                 debugSwitchBounds,
-                "debugModeSwitch")
+                "debugModeSwitch")    
+                .AddSmallButton(
+    "Detection Settings...",
+    OnDetectionSettingsClicked,
+    detectionButtonBounds)     
             .AddSmallButton(
                 "Save",
                 OnSaveClicked,
@@ -360,6 +371,15 @@ ElementBounds cancelButtonBounds =
         "[Prospector's Instinct] Debug Mode changed to {0}.",
         enabled
     );
+}
+
+private bool OnDetectionSettingsClicked()
+{
+    capi.Logger.Notification(
+        "[Prospector's Instinct] Detection Settings button clicked."
+    );
+
+    return true;
 }
 
     private bool OnSaveClicked()
