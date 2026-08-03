@@ -8,6 +8,8 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 {
     private ProspectorsInstinctConfig workingConfig;
 
+    private GuiDialogDetectionSettings? detectionDialog;
+
     public override string ToggleKeyCombinationCode =>
         "prospectorsinstinct-config";
 
@@ -375,9 +377,17 @@ ElementBounds cancelButtonBounds =
 
 private bool OnDetectionSettingsClicked()
 {
-    capi.Logger.Notification(
-        "[Prospector's Instinct] Detection Settings button clicked."
-    );
+    detectionDialog ??=
+        new GuiDialogDetectionSettings(capi);
+
+    if (detectionDialog.IsOpened())
+    {
+        detectionDialog.TryClose();
+    }
+    else
+    {
+        detectionDialog.TryOpen();
+    }
 
     return true;
 }
