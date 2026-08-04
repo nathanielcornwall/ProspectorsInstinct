@@ -32,6 +32,9 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 .Config
                 .Clone();
 
+                detectionDialog?.Dispose();
+    detectionDialog = null;
+
         SingleComposer
             .GetSwitch("enableModSwitch")
             .On = workingConfig.Enabled;
@@ -378,7 +381,9 @@ ElementBounds cancelButtonBounds =
 private bool OnDetectionSettingsClicked()
 {
     detectionDialog ??=
-        new GuiDialogDetectionSettings(capi);
+    new GuiDialogDetectionSettings(
+        capi,
+        workingConfig);
 
     if (detectionDialog.IsOpened())
     {
