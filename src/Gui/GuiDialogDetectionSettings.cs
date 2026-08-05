@@ -27,11 +27,11 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
                 nameof(workingConfig));
 
         displayedOres =
-            workingConfig
-                .DetectOres
-                .OrderBy(entry => entry.Key)
-                .Take(20)
-                .ToList();
+    workingConfig
+        .DetectOres
+        .OrderBy(entry => entry.Key)
+        .Take(5)
+        .ToList();
 
         ComposeDialog();
     }
