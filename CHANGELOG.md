@@ -4,6 +4,30 @@ All notable changes to Prospector's Instinct will be documented in this file.
 
 ---
 
+## v0.9.1
+
+### Added
+
+- Scrollable Detection Settings panel
+- Full dynamic resource list
+- Category-based resource grouping
+- Category headers for metals, precious metals, industrial minerals, chemical minerals, fuels, gemstones, and other resources
+- Enable All and Disable All controls
+
+### Improved
+
+- Detection Settings layout and spacing
+- Resource ordering using existing metadata categories
+- Detection Settings wording and overall usability
+- Support for viewing and configuring all detectable resources in one panel
+
+### Fixed
+
+- Detection Settings no longer expands off-screen when displaying larger resource lists
+- Scrollbar interaction now works correctly with the dynamic resource list
+
+---
+
 ## v0.7.0
 
 ### Added
