@@ -21,6 +21,9 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
 
     private ElementBounds? scrollContainerBounds;
 
+    private readonly Dictionary<string, GuiElementSwitch>
+    oreSwitches = new();
+
     public override string ToggleKeyCombinationCode =>
         "prospectorsinstinct-detection-settings";
 
@@ -111,6 +114,20 @@ double totalListHeight =
                 20,
                 VisibleListHeight);
 
+                ElementBounds enableAllButtonBounds =
+    ElementBounds.Fixed(
+        20,
+        385,
+        100,
+        35);
+
+ElementBounds disableAllButtonBounds =
+    ElementBounds.Fixed(
+        130,
+        385,
+        100,
+        35);
+
         ElementBounds closeButtonBounds =
             ElementBounds.Fixed(
                 460,
@@ -141,13 +158,21 @@ double totalListHeight =
                         "scroll-content")
                 .EndClip()
                 .AddVerticalScrollbar(
-                    OnScrollbarChanged,
-                    scrollbarBounds,
-                    "oreScrollbar")
-                .AddSmallButton(
-                    "Close",
-                    OnCloseButtonClicked,
-                    closeButtonBounds)
+    OnScrollbarChanged,
+    scrollbarBounds,
+    "oreScrollbar")
+.AddSmallButton(
+    "Enable All",
+    OnEnableAllClicked,
+    enableAllButtonBounds)
+.AddSmallButton(
+    "Disable All",
+    OnDisableAllClicked,
+    disableAllButtonBounds)
+.AddSmallButton(
+    "Close",
+    OnCloseButtonClicked,
+    closeButtonBounds)
             .EndChildElements();
 
         PopulateScrollContainer();
@@ -243,8 +268,10 @@ double totalListHeight =
 
         oreSwitch.On = isEnabled;
 
-        container.Add(label);
-        container.Add(oreSwitch);
+oreSwitches[oreName] = oreSwitch;
+
+container.Add(label);
+container.Add(oreSwitch);
 
         currentY += RowHeight;
     }
@@ -282,44 +309,79 @@ private static string GetCategoryDisplayName(
 }
 
     private void OnScrollbarChanged(
-        float scrollPosition)
+    float scrollPosition)
+{
+    if (scrollContainerBounds == null)
     {
-        if (scrollContainerBounds == null)
-        {
-            return;
-        }
-
-        scrollContainerBounds.fixedY =
-            -scrollPosition;
-
-        scrollContainerBounds.CalcWorldBounds();
-
-        capi.Logger.Debug(
-            "[Prospector's Instinct] Scroll position: {0}",
-            scrollPosition);
+        return;
     }
 
-    private void OnOreChanged(
-        string oreName,
-        bool enabled)
+    scrollContainerBounds.fixedY =
+        -scrollPosition;
+
+    scrollContainerBounds.CalcWorldBounds();
+
+    capi.Logger.Debug(
+        "[Prospector's Instinct] Scroll position: {0}",
+        scrollPosition);
+}
+
+private void SetAllOres(bool enabled)
+{
+    foreach (OreMetadata ore in displayedOres)
     {
+        string oreName =
+            ore.DisplayName;
+
         workingConfig.DetectOres[oreName] =
             enabled;
 
-        capi.Logger.Notification(
-            "[Prospector's Instinct] {0}: {1}",
-            oreName,
-            enabled);
+        if (oreSwitches.TryGetValue(
+                oreName,
+                out GuiElementSwitch? oreSwitch))
+        {
+            oreSwitch.On = enabled;
+        }
     }
 
-    private void OnCloseClicked()
-    {
-        TryClose();
-    }
+    capi.Logger.Notification(
+        "[Prospector's Instinct] All detectable resources: {0}",
+        enabled);
+}
 
-    private bool OnCloseButtonClicked()
-    {
-        TryClose();
-        return true;
-    }
+private bool OnEnableAllClicked()
+{
+    SetAllOres(true);
+    return true;
+}
+
+private bool OnDisableAllClicked()
+{
+    SetAllOres(false);
+    return true;
+}
+
+private void OnOreChanged(
+    string oreName,
+    bool enabled)
+{
+    workingConfig.DetectOres[oreName] =
+        enabled;
+
+    capi.Logger.Notification(
+        "[Prospector's Instinct] {0}: {1}",
+        oreName,
+        enabled);
+}
+
+private void OnCloseClicked()
+{
+    TryClose();
+}
+
+private bool OnCloseButtonClicked()
+{
+    TryClose();
+    return true;
+}
 }
