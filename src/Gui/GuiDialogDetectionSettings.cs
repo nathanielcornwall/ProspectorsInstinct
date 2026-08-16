@@ -12,7 +12,7 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
     private const double VisibleListHeight = 260;
     private const double RowHeight = 42;
 
-    private const double CategoryHeaderHeight = 34;
+    private const double CategoryHeaderHeight = 38;
 
     private readonly ProspectorsInstinctConfig workingConfig;
 
@@ -118,14 +118,14 @@ double totalListHeight =
     ElementBounds.Fixed(
         20,
         385,
-        100,
+        110,
         35);
 
 ElementBounds disableAllButtonBounds =
     ElementBounds.Fixed(
-        130,
+        140,
         385,
-        100,
+        110,
         35);
 
         ElementBounds closeButtonBounds =
@@ -144,7 +144,7 @@ ElementBounds disableAllButtonBounds =
                 "Detection Settings",
                 OnCloseClicked)
             .AddStaticText(
-                "Enabled Detectable Resources",
+                "Detectable Resources",
                 CairoFont.WhiteSmallishText(),
                 descriptionBounds)
             .BeginChildElements()
