@@ -35,7 +35,6 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
             workingConfig
                 .DetectOres
                 .OrderBy(entry => entry.Key)
-                .Take(20)
                 .ToList();
 
         ComposeDialog();
