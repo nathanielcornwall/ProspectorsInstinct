@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ProspectorsInstinct.Config;
 using Vintagestory.API.Client;
+using ProspectorsInstinct.Metadata;
 
 namespace ProspectorsInstinct.Gui;
 
@@ -13,8 +14,8 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
 
     private readonly ProspectorsInstinctConfig workingConfig;
 
-    private readonly List<KeyValuePair<string, bool>>
-        displayedOres;
+    private readonly List<OreMetadata>
+    displayedOres;
 
     private ElementBounds? scrollContainerBounds;
 
@@ -31,11 +32,16 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
             ?? throw new ArgumentNullException(
                 nameof(workingConfig));
 
-        displayedOres =
+       displayedOres =
+    OreMetadataProvider
+        .GetAll()
+        .Where(ore =>
             workingConfig
                 .DetectOres
-                .OrderBy(entry => entry.Key)
-                .ToList();
+                .ContainsKey(ore.DisplayName))
+        .OrderBy(ore => ore.Category)
+        .ThenBy(ore => ore.DisplayName)
+        .ToList();
 
         ComposeDialog();
     }
@@ -156,8 +162,8 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
              index < displayedOres.Count;
              index++)
         {
-            string oreName =
-                displayedOres[index].Key;
+           string oreName =
+    displayedOres[index].DisplayName;
 
             bool isEnabled =
                 workingConfig.DetectOres[oreName];
