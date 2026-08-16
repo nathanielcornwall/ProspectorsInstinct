@@ -8,10 +8,15 @@ namespace ProspectorsInstinct.Gui;
 
 public sealed class GuiDialogDetectionSettings : GuiDialog
 {
+    private const double VisibleListHeight = 260;
+    private const double RowHeight = 42;
+
     private readonly ProspectorsInstinctConfig workingConfig;
 
     private readonly List<KeyValuePair<string, bool>>
         displayedOres;
+
+    private ElementBounds? scrollContainerBounds;
 
     public override string ToggleKeyCombinationCode =>
         "prospectorsinstinct-detection-settings";
@@ -27,11 +32,11 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
                 nameof(workingConfig));
 
         displayedOres =
-    workingConfig
-        .DetectOres
-        .OrderBy(entry => entry.Key)
-        .Take(5)
-        .ToList();
+            workingConfig
+                .DetectOres
+                .OrderBy(entry => entry.Key)
+                .Take(20)
+                .ToList();
 
         ComposeDialog();
     }
@@ -48,7 +53,7 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
             ElementBounds.Fixed(
                     0,
                     0,
-                    560,
+                    580,
                     460)
                 .WithFixedPadding(
                     GuiStyle.ElementToDialogPadding);
@@ -58,31 +63,95 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
                 20,
                 65,
                 500,
-                40);
+                30);
+
+        ElementBounds insetBounds =
+            ElementBounds.Fixed(
+                20,
+                105,
+                500,
+                VisibleListHeight);
+
+        ElementBounds clipBounds =
+            insetBounds.ForkContainingChild(
+                GuiStyle.HalfPadding,
+                GuiStyle.HalfPadding,
+                GuiStyle.HalfPadding,
+                GuiStyle.HalfPadding);
+
+        double totalListHeight =
+            displayedOres.Count * RowHeight;
+
+        scrollContainerBounds =
+            ElementBounds.Fixed(
+                0,
+                0,
+                450,
+                totalListHeight)
+            .WithParent(clipBounds);
+
+        ElementBounds scrollbarBounds =
+            ElementBounds.Fixed(
+                525,
+                105,
+                20,
+                VisibleListHeight);
 
         ElementBounds closeButtonBounds =
             ElementBounds.Fixed(
-                430,
+                460,
                 385,
                 90,
                 35);
 
-        GuiComposer composer = capi.Gui
+        SingleComposer = capi.Gui
             .CreateCompo(
                 "prospectorsinstinct-detection-settings",
                 dialogBounds)
-            .AddShadedDialogBG(
-                contentBounds)
+            .AddShadedDialogBG(contentBounds)
             .AddDialogTitleBar(
                 "Detection Settings",
                 OnCloseClicked)
             .AddStaticText(
                 "Enabled Detectable Resources",
                 CairoFont.WhiteSmallishText(),
-                descriptionBounds);
+                descriptionBounds)
+            .BeginChildElements()
+                .AddInset(
+                    insetBounds,
+                    3)
+                .BeginClip(
+                    clipBounds)
+                    .AddContainer(
+                        scrollContainerBounds,
+                        "scroll-content")
+                .EndClip()
+                .AddVerticalScrollbar(
+                    OnScrollbarChanged,
+                    scrollbarBounds,
+                    "oreScrollbar")
+                .AddSmallButton(
+                    "Close",
+                    OnCloseButtonClicked,
+                    closeButtonBounds)
+            .EndChildElements();
 
-        const double firstRowY = 120;
-        const double rowSpacing = 48;
+        PopulateScrollContainer();
+
+        SingleComposer.Compose();
+
+        SingleComposer
+            .GetScrollbar("oreScrollbar")
+            .SetHeights(
+                (float)VisibleListHeight,
+                (float)totalListHeight);
+    }
+
+    private void PopulateScrollContainer()
+    {
+        GuiElementContainer container =
+            SingleComposer.GetContainer(
+                "scroll-content");
 
         for (int index = 0;
              index < displayedOres.Count;
@@ -91,69 +160,70 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
             string oreName =
                 displayedOres[index].Key;
 
-            string switchKey =
-                $"oreSwitch{index}";
+            bool isEnabled =
+                workingConfig.DetectOres[oreName];
 
             double rowY =
-                firstRowY +
-                index * rowSpacing;
+                index * RowHeight;
 
             ElementBounds labelBounds =
                 ElementBounds.Fixed(
-                    20,
-                    rowY + 5,
-                    420,
-                    30);
+                        0,
+                        rowY + 5,
+                        370,
+                        30)
+                    .WithParent(
+                        scrollContainerBounds);
 
             ElementBounds switchBounds =
                 ElementBounds.Fixed(
-                    470,
-                    rowY,
-                    40,
-                    30);
+                        390,
+                        rowY,
+                        40,
+                        30)
+                    .WithParent(
+                        scrollContainerBounds);
 
-            composer
-                .AddStaticText(
+            GuiElementStaticText label =
+                new(
+                    capi,
                     oreName,
-                    CairoFont.WhiteSmallishText(),
-                    labelBounds)
-                .AddSwitch(
+                    EnumTextOrientation.Left,
+                    labelBounds,
+                    CairoFont.WhiteSmallishText());
+
+            GuiElementSwitch oreSwitch =
+                new(
+                    capi,
                     enabled =>
                         OnOreChanged(
                             oreName,
                             enabled),
-                    switchBounds,
-                    switchKey);
+                    switchBounds);
+
+            oreSwitch.On = isEnabled;
+
+            container.Add(label);
+            container.Add(oreSwitch);
         }
-
-        SingleComposer = composer
-            .AddSmallButton(
-                "Close",
-                OnCloseButtonClicked,
-                closeButtonBounds)
-            .Compose();
-
-        InitializeSwitches();
     }
 
-    private void InitializeSwitches()
+    private void OnScrollbarChanged(
+        float scrollPosition)
     {
-        for (int index = 0;
-             index < displayedOres.Count;
-             index++)
+        if (scrollContainerBounds == null)
         {
-            string oreName =
-                displayedOres[index].Key;
-
-            string switchKey =
-                $"oreSwitch{index}";
-
-            SingleComposer
-                .GetSwitch(switchKey)
-                .On =
-                    workingConfig
-                        .DetectOres[oreName];
+            return;
         }
+
+        scrollContainerBounds.fixedY =
+            -scrollPosition;
+
+        scrollContainerBounds.CalcWorldBounds();
+
+        capi.Logger.Debug(
+            "[Prospector's Instinct] Scroll position: {0}",
+            scrollPosition);
     }
 
     private void OnOreChanged(
@@ -166,8 +236,7 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
         capi.Logger.Notification(
             "[Prospector's Instinct] {0}: {1}",
             oreName,
-            enabled
-        );
+            enabled);
     }
 
     private void OnCloseClicked()
