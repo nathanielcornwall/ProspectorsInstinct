@@ -12,6 +12,8 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
     private const double VisibleListHeight = 260;
     private const double RowHeight = 42;
 
+    private const double CategoryHeaderHeight = 34;
+
     private readonly ProspectorsInstinctConfig workingConfig;
 
     private readonly List<OreMetadata>
@@ -84,8 +86,15 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
                 GuiStyle.HalfPadding,
                 GuiStyle.HalfPadding);
 
-        double totalListHeight =
-            displayedOres.Count * RowHeight;
+        int categoryCount =
+    displayedOres
+        .Select(ore => ore.Category)
+        .Distinct()
+        .Count();
+
+double totalListHeight =
+    displayedOres.Count * RowHeight
+    + categoryCount * CategoryHeaderHeight;
 
         scrollContainerBounds =
             ElementBounds.Fixed(
@@ -153,65 +162,124 @@ public sealed class GuiDialogDetectionSettings : GuiDialog
     }
 
     private void PopulateScrollContainer()
+{
+    GuiElementContainer container =
+        SingleComposer.GetContainer(
+            "scroll-content");
+
+    double currentY = 0;
+
+    OreCategory? currentCategory = null;
+
+    foreach (OreMetadata ore in displayedOres)
     {
-        GuiElementContainer container =
-            SingleComposer.GetContainer(
-                "scroll-content");
-
-        for (int index = 0;
-             index < displayedOres.Count;
-             index++)
+        if (currentCategory != ore.Category)
         {
-           string oreName =
-    displayedOres[index].DisplayName;
+            currentCategory = ore.Category;
 
-            bool isEnabled =
-                workingConfig.DetectOres[oreName];
-
-            double rowY =
-                index * RowHeight;
-
-            ElementBounds labelBounds =
+            ElementBounds headerBounds =
                 ElementBounds.Fixed(
                         0,
-                        rowY + 5,
-                        370,
-                        30)
+                        currentY + 4,
+                        430,
+                        25)
                     .WithParent(
                         scrollContainerBounds);
 
-            ElementBounds switchBounds =
-                ElementBounds.Fixed(
-                        390,
-                        rowY,
-                        40,
-                        30)
-                    .WithParent(
-                        scrollContainerBounds);
-
-            GuiElementStaticText label =
+            GuiElementStaticText header =
                 new(
                     capi,
-                    oreName,
+                    GetCategoryDisplayName(
+                        ore.Category),
                     EnumTextOrientation.Left,
-                    labelBounds,
+                    headerBounds,
                     CairoFont.WhiteSmallishText());
 
-            GuiElementSwitch oreSwitch =
-                new(
-                    capi,
-                    enabled =>
-                        OnOreChanged(
-                            oreName,
-                            enabled),
-                    switchBounds);
+            container.Add(header);
 
-            oreSwitch.On = isEnabled;
-
-            container.Add(label);
-            container.Add(oreSwitch);
+            currentY += CategoryHeaderHeight;
         }
+
+        string oreName =
+            ore.DisplayName;
+
+        bool isEnabled =
+            workingConfig.DetectOres[oreName];
+
+        ElementBounds labelBounds =
+            ElementBounds.Fixed(
+                    10,
+                    currentY + 5,
+                    360,
+                    30)
+                .WithParent(
+                    scrollContainerBounds);
+
+        ElementBounds switchBounds =
+            ElementBounds.Fixed(
+                    390,
+                    currentY,
+                    40,
+                    30)
+                .WithParent(
+                    scrollContainerBounds);
+
+        GuiElementStaticText label =
+            new(
+                capi,
+                oreName,
+                EnumTextOrientation.Left,
+                labelBounds,
+                CairoFont.WhiteSmallishText());
+
+        GuiElementSwitch oreSwitch =
+            new(
+                capi,
+                enabled =>
+                    OnOreChanged(
+                        oreName,
+                        enabled),
+                switchBounds);
+
+        oreSwitch.On = isEnabled;
+
+        container.Add(label);
+        container.Add(oreSwitch);
+
+        currentY += RowHeight;
     }
+}
+
+private static string GetCategoryDisplayName(
+    OreCategory category)
+{
+    return category switch
+    {
+        OreCategory.Metal =>
+            "Metals",
+
+        OreCategory.PreciousMetal =>
+            "Precious Metals",
+
+        OreCategory.Industrial =>
+            "Industrial Minerals",
+
+        OreCategory.Chemical =>
+            "Chemical Minerals",
+
+        OreCategory.Fuel =>
+            "Fuels",
+
+        OreCategory.Gemstone =>
+            "Gemstones",
+
+        OreCategory.Misc =>
+            "Other",
+
+        _ =>
+            category.ToString()
+    };
+}
 
     private void OnScrollbarChanged(
         float scrollPosition)
