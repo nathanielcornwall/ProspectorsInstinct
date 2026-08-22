@@ -43,9 +43,12 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             .GetSwitch("requirePickSwitch")
             .On = workingConfig.RequireProspectingPick;
 
-            SingleComposer
-    .GetSwitch("debugModeSwitch")
-    .On = workingConfig.DebugMode;
+            if (CanUseDebugMode())
+{
+    SingleComposer
+        .GetSwitch("debugModeSwitch")
+        .On = workingConfig.DebugMode;
+}
 
         SingleComposer
             .GetSlider("scanRadiusSlider")
@@ -247,34 +250,39 @@ ElementBounds cancelButtonBounds =
                 densitySliderBounds,
                 "particleDensitySlider")
             .AddStaticText(
-                "Require Prospecting Pick",
-                CairoFont.WhiteSmallishText(),
-                pickLabelBounds)
-            .AddSwitch(
-                OnRequirePickChanged,
-                pickSwitchBounds,
-                "requirePickSwitch")
-            .AddStaticText(
-                "Debug Mode",
-                CairoFont.WhiteSmallishText(),
-                debugLabelBounds)
-            .AddSwitch(
-                OnDebugModeChanged,
-                debugSwitchBounds,
-                "debugModeSwitch")    
-                .AddSmallButton(
-    "Detection Settings...",
-    OnDetectionSettingsClicked,
-    detectionButtonBounds)     
-            .AddSmallButton(
-                "Save",
-                OnSaveClicked,
-                saveButtonBounds)
-            .AddSmallButton(
-                "Cancel",
-                OnCancelClicked,
-                cancelButtonBounds)
-            .Compose();
+    "Require Prospecting Pick",
+    CairoFont.WhiteSmallishText(),
+    pickLabelBounds)
+.AddSwitch(
+    OnRequirePickChanged,
+    pickSwitchBounds,
+    "requirePickSwitch");
+    if (CanUseDebugMode())
+{
+    SingleComposer
+        .AddStaticText(
+            "Debug Mode",
+            CairoFont.WhiteSmallishText(),
+            debugLabelBounds)
+        .AddSwitch(
+            OnDebugModeChanged,
+            debugSwitchBounds,
+            "debugModeSwitch");
+}     
+            SingleComposer
+    .AddSmallButton(
+        "Detection Settings...",
+        OnDetectionSettingsClicked,
+        detectionButtonBounds)
+    .AddSmallButton(
+        "Save",
+        OnSaveClicked,
+        saveButtonBounds)
+    .AddSmallButton(
+        "Cancel",
+        OnCancelClicked,
+        cancelButtonBounds)
+    .Compose();
 
         SingleComposer
             .GetSwitch("enableModSwitch")
@@ -284,9 +292,12 @@ ElementBounds cancelButtonBounds =
             .GetSwitch("requirePickSwitch")
             .On = workingConfig.RequireProspectingPick;
 
-            SingleComposer
-    .GetSwitch("debugModeSwitch")
-    .On = workingConfig.DebugMode;
+            if (CanUseDebugMode())
+{
+    SingleComposer
+        .GetSwitch("debugModeSwitch")
+        .On = workingConfig.DebugMode;
+}
 
         SingleComposer
             .GetSlider("scanRadiusSlider")
@@ -311,6 +322,17 @@ ElementBounds cancelButtonBounds =
                 string.Empty);
     }
 
+private bool CanUseDebugMode()
+{
+    var player = capi.World.Player;
+
+    if (player == null)
+    {
+        return false;
+    }
+
+    return player.HasPrivilege("kick");
+}
     private void OnEnabledChanged(bool enabled)
     {
         workingConfig.Enabled = enabled;
