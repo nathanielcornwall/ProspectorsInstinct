@@ -3,6 +3,20 @@
 All notable changes to Prospector's Instinct will be documented in this file.
 
 ---
+## v0.9.2
+
+### Improved
+
+- Debug Mode is now restricted to server moderators and administrators.
+- Added runtime permission enforcement for Debug Mode in multiplayer.
+- Improved multiplayer configuration security by preventing regular players from enabling debug logging through manual config edits.
+
+### Fixed
+
+- Prospecting Pick Heads no longer incorrectly activate ore detection.
+- Finished Prospecting Picks continue to activate ore detection normally.
+
+---
 
 ## v0.9.1
 
