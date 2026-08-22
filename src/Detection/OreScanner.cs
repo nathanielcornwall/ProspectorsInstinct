@@ -161,6 +161,6 @@ public class OreScanner
             .ToString()
             .ToLowerInvariant();
 
-        return itemCode.Contains("prospectingpick");
+        return itemCode.Contains("prospectingpick-");
     }
 }
