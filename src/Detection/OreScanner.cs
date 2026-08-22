@@ -96,13 +96,14 @@ public class OreScanner
             return;
         }
 
-        if (ProspectorsInstinctModSystem.Config.DebugMode)
-        {
-            api.Logger.Notification(
-                $"[Prospector's Instinct] Found {result.OreName} " +
-                $"({result.Distance:F1} blocks away)"
-            );
-        }
+        if (ProspectorsInstinctModSystem.Config.DebugMode &&
+    player.HasPrivilege("kick"))
+{
+    api.Logger.Notification(
+        $"[Prospector's Instinct] Found {result.OreName} " +
+        $"({result.Distance:F1} blocks away)"
+    );
+}
 
         Vec3d playerPos =
             player.Entity.Pos.XYZ.Add(0, 1.5, 0);
