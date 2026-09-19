@@ -32,8 +32,8 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 .Config
                 .Clone();
 
-                detectionDialog?.Dispose();
-    detectionDialog = null;
+        detectionDialog?.Dispose();
+        detectionDialog = null;
 
         SingleComposer
             .GetSwitch("enableModSwitch")
@@ -43,12 +43,12 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             .GetSwitch("requirePickSwitch")
             .On = workingConfig.RequireProspectingPick;
 
-            if (CanUseDebugMode())
-{
-    SingleComposer
-        .GetSwitch("debugModeSwitch")
-        .On = workingConfig.DebugMode;
-}
+        if (CanUseDebugMode())
+        {
+            SingleComposer
+                .GetSwitch("debugModeSwitch")
+                .On = workingConfig.DebugMode;
+        }
 
         SingleComposer
             .GetSlider("scanRadiusSlider")
@@ -84,6 +84,25 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 $"Particle Density: {workingConfig.ParticleDensity:0.0}x",
                 forceRedraw: true);
 
+        int sizeStep =
+            (int)Math.Round(
+                workingConfig.ParticleSize * 10);
+
+        SingleComposer
+            .GetSlider("particleSizeSlider")
+            .SetValues(
+                sizeStep,
+                5,
+                20,
+                1,
+                string.Empty);
+
+        SingleComposer
+            .GetDynamicText("particleSizeLabel")
+            .SetNewText(
+                $"Particle Size: {workingConfig.ParticleSize:0.0}x",
+                forceRedraw: true);
+
         return base.TryOpen();
     }
 
@@ -96,119 +115,139 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                     EnumDialogArea.CenterMiddle);
 
         ElementBounds contentBounds =
-    ElementBounds.Fixed(
-            0,
-            0,
-            560,
-            600)
+            ElementBounds.Fixed(
+                0,
+                0,
+                560,
+                680)
                 .WithFixedPadding(
                     GuiStyle.ElementToDialogPadding);
 
         ElementBounds descriptionBounds =
-    ElementBounds.Fixed(
-        20,
-        55,
-        500,
-        30);
+            ElementBounds.Fixed(
+                20,
+                55,
+                500,
+                30);
 
-ElementBounds enableLabelBounds =
-    ElementBounds.Fixed(
-        20,
-        105,
-        420,
-        30);
+        ElementBounds enableLabelBounds =
+            ElementBounds.Fixed(
+                20,
+                105,
+                420,
+                30);
 
-ElementBounds enableSwitchBounds =
-    ElementBounds.Fixed(
-        470,
-        100,
-        40,
-        30);
+        ElementBounds enableSwitchBounds =
+            ElementBounds.Fixed(
+                470,
+                100,
+                40,
+                30);
 
-// ---------- Scan Radius ----------
+        // ---------- Scan Radius ----------
 
-ElementBounds radiusLabelBounds =
-    ElementBounds.Fixed(
-        20,
-        150,
-        500,
-        25);
+        ElementBounds radiusLabelBounds =
+            ElementBounds.Fixed(
+                20,
+                150,
+                500,
+                25);
 
-ElementBounds radiusSliderBounds =
-    ElementBounds.Fixed(
-        20,
-        180,
-        500,
-        35);
+        ElementBounds radiusSliderBounds =
+            ElementBounds.Fixed(
+                20,
+                180,
+                500,
+                35);
 
-// ---------- Particle Density ----------
+        // ---------- Particle Density ----------
 
-ElementBounds densityLabelBounds =
-    ElementBounds.Fixed(
-        20,
-        235,
-        500,
-        25);
+        ElementBounds densityLabelBounds =
+            ElementBounds.Fixed(
+                20,
+                235,
+                500,
+                25);
 
-ElementBounds densitySliderBounds =
-    ElementBounds.Fixed(
-        20,
-        265,
-        500,
-        35);
+        ElementBounds densitySliderBounds =
+            ElementBounds.Fixed(
+                20,
+                265,
+                500,
+                35);
 
-// ---------- Require Pick ----------
+        // ---------- Particle Size ----------
 
-ElementBounds pickLabelBounds =
-    ElementBounds.Fixed(
-        20,
-        325,
-        420,
-        30);
+        ElementBounds sizeLabelBounds =
+            ElementBounds.Fixed(
+                20,
+                320,
+                500,
+                25);
 
-ElementBounds pickSwitchBounds =
-    ElementBounds.Fixed(
-        470,
-        320,
-        40,
-        30);
+        ElementBounds sizeSliderBounds =
+            ElementBounds.Fixed(
+                20,
+                350,
+                500,
+                35);
+
+        // ---------- Require Pick ----------
+
+        ElementBounds pickLabelBounds =
+            ElementBounds.Fixed(
+                20,
+                410,
+                420,
+                30);
+
+        ElementBounds pickSwitchBounds =
+            ElementBounds.Fixed(
+                470,
+                405,
+                40,
+                30);
+
+        // ---------- Debug Mode ----------
 
         ElementBounds debugLabelBounds =
-    ElementBounds.Fixed(
-        20,
-        380,
-        420,
-        30);
+            ElementBounds.Fixed(
+                20,
+                465,
+                420,
+                30);
 
-ElementBounds debugSwitchBounds =
-    ElementBounds.Fixed(
-        470,
-        375,
-        40,
-        30);
+        ElementBounds debugSwitchBounds =
+            ElementBounds.Fixed(
+                470,
+                460,
+                40,
+                30);
+
+        // ---------- Detection Settings ----------
 
         ElementBounds detectionButtonBounds =
-    ElementBounds.Fixed(
-        20,
-        445,
-        500,
-        40);
+            ElementBounds.Fixed(
+                20,
+                530,
+                500,
+                40);
 
-// ---------- Buttons ----------
+        // ---------- Buttons ----------
 
-ElementBounds saveButtonBounds =
-    ElementBounds.Fixed(
-        330,
-        545,
-        90,
-        35);
+        ElementBounds saveButtonBounds =
+            ElementBounds.Fixed(
+                330,
+                625,
+                90,
+                35);
 
-ElementBounds cancelButtonBounds =
-    ElementBounds.Fixed(
-        430,
-        545,
-        90,
-        35);
+        ElementBounds cancelButtonBounds =
+            ElementBounds.Fixed(
+                430,
+                625,
+                90,
+                35);
 
         SingleComposer = capi.Gui
             .CreateCompo(
@@ -249,40 +288,51 @@ ElementBounds cancelButtonBounds =
                 OnParticleDensityChanged,
                 densitySliderBounds,
                 "particleDensitySlider")
+            .AddDynamicText(
+                $"Particle Size: {workingConfig.ParticleSize:0.0}x",
+                CairoFont.WhiteSmallishText(),
+                sizeLabelBounds,
+                "particleSizeLabel")
+            .AddSlider(
+                OnParticleSizeChanged,
+                sizeSliderBounds,
+                "particleSizeSlider")
             .AddStaticText(
-    "Require Prospecting Pick",
-    CairoFont.WhiteSmallishText(),
-    pickLabelBounds)
-.AddSwitch(
-    OnRequirePickChanged,
-    pickSwitchBounds,
-    "requirePickSwitch");
-    if (CanUseDebugMode())
-{
-    SingleComposer
-        .AddStaticText(
-            "Debug Mode",
-            CairoFont.WhiteSmallishText(),
-            debugLabelBounds)
-        .AddSwitch(
-            OnDebugModeChanged,
-            debugSwitchBounds,
-            "debugModeSwitch");
-}     
+                "Require Prospecting Pick",
+                CairoFont.WhiteSmallishText(),
+                pickLabelBounds)
+            .AddSwitch(
+                OnRequirePickChanged,
+                pickSwitchBounds,
+                "requirePickSwitch");
+
+        if (CanUseDebugMode())
+        {
             SingleComposer
-    .AddSmallButton(
-        "Detection Settings...",
-        OnDetectionSettingsClicked,
-        detectionButtonBounds)
-    .AddSmallButton(
-        "Save",
-        OnSaveClicked,
-        saveButtonBounds)
-    .AddSmallButton(
-        "Cancel",
-        OnCancelClicked,
-        cancelButtonBounds)
-    .Compose();
+                .AddStaticText(
+                    "Debug Mode",
+                    CairoFont.WhiteSmallishText(),
+                    debugLabelBounds)
+                .AddSwitch(
+                    OnDebugModeChanged,
+                    debugSwitchBounds,
+                    "debugModeSwitch");
+        }
+
+        SingleComposer
+            .AddSmallButton(
+                "Detection Settings...",
+                OnDetectionSettingsClicked,
+                detectionButtonBounds)
+            .AddSmallButton(
+                "Save",
+                OnSaveClicked,
+                saveButtonBounds)
+            .AddSmallButton(
+                "Cancel",
+                OnCancelClicked,
+                cancelButtonBounds)
+            .Compose();
 
         SingleComposer
             .GetSwitch("enableModSwitch")
@@ -292,12 +342,12 @@ ElementBounds cancelButtonBounds =
             .GetSwitch("requirePickSwitch")
             .On = workingConfig.RequireProspectingPick;
 
-            if (CanUseDebugMode())
-{
-    SingleComposer
-        .GetSwitch("debugModeSwitch")
-        .On = workingConfig.DebugMode;
-}
+        if (CanUseDebugMode())
+        {
+            SingleComposer
+                .GetSwitch("debugModeSwitch")
+                .On = workingConfig.DebugMode;
+        }
 
         SingleComposer
             .GetSlider("scanRadiusSlider")
@@ -320,19 +370,33 @@ ElementBounds cancelButtonBounds =
                 20,
                 1,
                 string.Empty);
+
+        int sizeStep =
+            (int)Math.Round(
+                workingConfig.ParticleSize * 10);
+
+        SingleComposer
+            .GetSlider("particleSizeSlider")
+            .SetValues(
+                sizeStep,
+                5,
+                20,
+                1,
+                string.Empty);
     }
 
-private bool CanUseDebugMode()
-{
-    var player = capi.World.Player;
-
-    if (player == null)
+    private bool CanUseDebugMode()
     {
-        return false;
+        var player = capi.World.Player;
+
+        if (player == null)
+        {
+            return false;
+        }
+
+        return player.HasPrivilege("kick");
     }
 
-    return player.HasPrivilege("kick");
-}
     private void OnEnabledChanged(bool enabled)
     {
         workingConfig.Enabled = enabled;
@@ -380,6 +444,25 @@ private bool CanUseDebugMode()
         return true;
     }
 
+    private bool OnParticleSizeChanged(int sizeStep)
+    {
+        workingConfig.ParticleSize =
+            sizeStep / 10f;
+
+        SingleComposer
+            .GetDynamicText("particleSizeLabel")
+            .SetNewText(
+                $"Particle Size: {workingConfig.ParticleSize:0.0}x",
+                forceRedraw: true);
+
+        capi.Logger.Notification(
+            "[Prospector's Instinct] Working particle size changed to {0:0.0}x.",
+            workingConfig.ParticleSize
+        );
+
+        return true;
+    }
+
     private void OnRequirePickChanged(bool enabled)
     {
         workingConfig.RequireProspectingPick = enabled;
@@ -391,33 +474,33 @@ private bool CanUseDebugMode()
     }
 
     private void OnDebugModeChanged(bool enabled)
-{
-    workingConfig.DebugMode = enabled;
-
-    capi.Logger.Notification(
-        "[Prospector's Instinct] Debug Mode changed to {0}.",
-        enabled
-    );
-}
-
-private bool OnDetectionSettingsClicked()
-{
-    detectionDialog ??=
-    new GuiDialogDetectionSettings(
-        capi,
-        workingConfig);
-
-    if (detectionDialog.IsOpened())
     {
-        detectionDialog.TryClose();
-    }
-    else
-    {
-        detectionDialog.TryOpen();
+        workingConfig.DebugMode = enabled;
+
+        capi.Logger.Notification(
+            "[Prospector's Instinct] Debug Mode changed to {0}.",
+            enabled
+        );
     }
 
-    return true;
-}
+    private bool OnDetectionSettingsClicked()
+    {
+        detectionDialog ??=
+            new GuiDialogDetectionSettings(
+                capi,
+                workingConfig);
+
+        if (detectionDialog.IsOpened())
+        {
+            detectionDialog.TryClose();
+        }
+        else
+        {
+            detectionDialog.TryOpen();
+        }
+
+        return true;
+    }
 
     private bool OnSaveClicked()
     {

@@ -19,14 +19,21 @@ public class ParticleGuide
         Vec3d visiblePosition = FindVisiblePosition(desiredPosition);
 
         float density = Math.Clamp(
-    ProspectorsInstinctModSystem.Config.ParticleDensity,
-    0.1f,
-    2.0f);
+            ProspectorsInstinctModSystem.Config.ParticleDensity,
+            0.1f,
+            2.0f
+        );
 
-var particle = new SimpleParticleProperties
-{
-    MinQuantity = 3 * density,
-    AddQuantity = 2 * density,
+        float size = Math.Clamp(
+            ProspectorsInstinctModSystem.Config.ParticleSize,
+            0.5f,
+            2.0f
+        );
+
+        var particle = new SimpleParticleProperties
+        {
+            MinQuantity = 3 * density,
+            AddQuantity = 2 * density,
 
             MinPos = visiblePosition,
             AddPos = new Vec3d(0.15, 0.15, 0.15),
@@ -37,8 +44,8 @@ var particle = new SimpleParticleProperties
             LifeLength = 0.8f,
             GravityEffect = 0f,
 
-            MinSize = 0.05f,
-            MaxSize = 0.10f,
+            MinSize = 0.05f * size,
+            MaxSize = 0.10f * size,
 
             Color = ColorUtil.ToRgba(220, 255, 230, 120),
             ParticleModel = EnumParticleModel.Quad
@@ -78,9 +85,12 @@ var particle = new SimpleParticleProperties
             return desiredPosition;
         }
 
-        Vec3d eyePosition = player.Entity.Pos.XYZ.AddCopy(0, 1.5, 0);
+        Vec3d eyePosition =
+            player.Entity.Pos.XYZ.AddCopy(0, 1.5, 0);
 
-        Vec3d difference = desiredPosition.SubCopy(eyePosition);
+        Vec3d difference =
+            desiredPosition.SubCopy(eyePosition);
+
         double distance = difference.Length();
 
         if (distance <= 0.01)
@@ -89,6 +99,7 @@ var particle = new SimpleParticleProperties
         }
 
         Vec3d direction = difference.Normalize();
+
         const double stepSize = 0.20;
 
         Vec3d lastVisiblePosition = eyePosition.AddCopy(
@@ -97,7 +108,10 @@ var particle = new SimpleParticleProperties
             direction.Z * 0.5
         );
 
-        for (double travelled = 0.5; travelled <= distance; travelled += stepSize)
+        for (
+            double travelled = 0.5;
+            travelled <= distance;
+            travelled += stepSize)
         {
             Vec3d testPosition = eyePosition.AddCopy(
                 direction.X * travelled,
@@ -124,7 +138,8 @@ var particle = new SimpleParticleProperties
             (int)Math.Floor(position.Z)
         );
 
-        Block block = capi.World.BlockAccessor.GetBlock(blockPos);
+        Block block =
+            capi.World.BlockAccessor.GetBlock(blockPos);
 
         return block != null &&
                block.BlockMaterial != EnumBlockMaterial.Air;
