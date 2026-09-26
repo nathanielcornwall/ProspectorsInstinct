@@ -33,6 +33,9 @@ public class ParticleGuide
             2.0f
         );
 
+        bool highVisibility =
+            ProspectorsInstinctModSystem.Config.HighVisibilityParticles;
+
         float proximityStrength =
             CalculateProximityStrength(distance);
 
@@ -41,6 +44,16 @@ public class ParticleGuide
 
         float responsiveLife =
             0.8f * proximityStrength;
+
+        if (highVisibility)
+        {
+            responsiveLife *= 1.35f;
+        }
+
+        int alpha =
+            highVisibility
+                ? 200
+                : 120;
 
         var particle = new SimpleParticleProperties
         {
@@ -73,7 +86,7 @@ public class ParticleGuide
             MaxSize = 0.10f * responsiveSize,
 
             Color = ColorUtil.ToRgba(
-                220,
+                alpha,
                 255,
                 230,
                 120
@@ -131,6 +144,19 @@ public class ParticleGuide
             2.0f
         );
 
+        bool highVisibility =
+            ProspectorsInstinctModSystem.Config.HighVisibilityParticles;
+
+        float lifeLength =
+            highVisibility
+                ? 1.2f
+                : 0.9f;
+
+        int alpha =
+            highVisibility
+                ? 200
+                : 120;
+
         var particle = new SimpleParticleProperties
         {
             MinQuantity = 1 * density,
@@ -156,14 +182,14 @@ public class ParticleGuide
                 0.02f
             ),
 
-            LifeLength = 0.9f,
+            LifeLength = lifeLength,
             GravityEffect = 0f,
 
             MinSize = 0.06f * size,
             MaxSize = 0.11f * size,
 
             Color = ColorUtil.ToRgba(
-                220,
+                alpha,
                 255,
                 230,
                 120

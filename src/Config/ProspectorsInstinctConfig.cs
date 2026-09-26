@@ -9,6 +9,7 @@ public class ProspectorsInstinctConfig
     public bool Enabled { get; set; } = true;
     public bool DebugMode { get; set; } = false;
     public bool RequireProspectingPick { get; set; } = true;
+    public bool HighVisibilityParticles { get; set; } = false;
 
     public int ScanRadius { get; set; } = 8;
     public int ScanIntervalMs { get; set; } = 500;
@@ -31,6 +32,7 @@ public class ProspectorsInstinctConfig
             Enabled = Enabled,
             DebugMode = DebugMode,
             RequireProspectingPick = RequireProspectingPick,
+            HighVisibilityParticles = HighVisibilityParticles,
             ScanRadius = ScanRadius,
             ScanIntervalMs = ScanIntervalMs,
             ParticleDensity = ParticleDensity,
@@ -44,6 +46,7 @@ public class ProspectorsInstinctConfig
         Enabled = source.Enabled;
         DebugMode = source.DebugMode;
         RequireProspectingPick = source.RequireProspectingPick;
+        HighVisibilityParticles = source.HighVisibilityParticles;
         ScanRadius = source.ScanRadius;
         ScanIntervalMs = source.ScanIntervalMs;
         ParticleDensity = source.ParticleDensity;

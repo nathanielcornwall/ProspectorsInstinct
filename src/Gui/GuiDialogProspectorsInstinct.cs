@@ -40,6 +40,10 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             .On = workingConfig.Enabled;
 
         SingleComposer
+            .GetSwitch("highVisibilitySwitch")
+            .On = workingConfig.HighVisibilityParticles;
+
+        SingleComposer
             .GetSwitch("requirePickSwitch")
             .On = workingConfig.RequireProspectingPick;
 
@@ -119,7 +123,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 0,
                 0,
                 560,
-                680)
+                735)
                 .WithFixedPadding(
                     GuiStyle.ElementToDialogPadding);
 
@@ -192,19 +196,35 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 500,
                 35);
 
-        // ---------- Require Pick ----------
+        // ---------- High Visibility ----------
 
-        ElementBounds pickLabelBounds =
+        ElementBounds highVisibilityLabelBounds =
             ElementBounds.Fixed(
                 20,
                 410,
                 420,
                 30);
 
-        ElementBounds pickSwitchBounds =
+        ElementBounds highVisibilitySwitchBounds =
             ElementBounds.Fixed(
                 470,
                 405,
+                40,
+                30);
+
+        // ---------- Require Pick ----------
+
+        ElementBounds pickLabelBounds =
+            ElementBounds.Fixed(
+                20,
+                465,
+                420,
+                30);
+
+        ElementBounds pickSwitchBounds =
+            ElementBounds.Fixed(
+                470,
+                460,
                 40,
                 30);
 
@@ -213,14 +233,14 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         ElementBounds debugLabelBounds =
             ElementBounds.Fixed(
                 20,
-                465,
+                520,
                 420,
                 30);
 
         ElementBounds debugSwitchBounds =
             ElementBounds.Fixed(
                 470,
-                460,
+                515,
                 40,
                 30);
 
@@ -229,7 +249,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         ElementBounds detectionButtonBounds =
             ElementBounds.Fixed(
                 20,
-                530,
+                585,
                 500,
                 40);
 
@@ -238,14 +258,14 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         ElementBounds saveButtonBounds =
             ElementBounds.Fixed(
                 330,
-                625,
+                680,
                 90,
                 35);
 
         ElementBounds cancelButtonBounds =
             ElementBounds.Fixed(
                 430,
-                625,
+                680,
                 90,
                 35);
 
@@ -298,6 +318,14 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 sizeSliderBounds,
                 "particleSizeSlider")
             .AddStaticText(
+                "High Visibility Particles",
+                CairoFont.WhiteSmallishText(),
+                highVisibilityLabelBounds)
+            .AddSwitch(
+                OnHighVisibilityChanged,
+                highVisibilitySwitchBounds,
+                "highVisibilitySwitch")
+            .AddStaticText(
                 "Require Prospecting Pick",
                 CairoFont.WhiteSmallishText(),
                 pickLabelBounds)
@@ -337,6 +365,10 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer
             .GetSwitch("enableModSwitch")
             .On = workingConfig.Enabled;
+
+        SingleComposer
+            .GetSwitch("highVisibilitySwitch")
+            .On = workingConfig.HighVisibilityParticles;
 
         SingleComposer
             .GetSwitch("requirePickSwitch")
@@ -461,6 +493,16 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         );
 
         return true;
+    }
+
+    private void OnHighVisibilityChanged(bool enabled)
+    {
+        workingConfig.HighVisibilityParticles = enabled;
+
+        capi.Logger.Notification(
+            "[Prospector's Instinct] High Visibility Particles changed to {0}.",
+            enabled
+        );
     }
 
     private void OnRequirePickChanged(bool enabled)
