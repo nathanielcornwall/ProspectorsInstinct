@@ -2,6 +2,20 @@
 
 All notable changes to Prospector's Instinct will be documented in this file.
 
+## v0.9.3
+
+### Added
+
+- Added configurable particle size from 0.5x to 2.0x.
+- Added High Visibility Particles accessibility option for improved particle visibility.
+
+### Improved
+
+- Particle guidance now becomes subtly stronger as the player approaches a detected resource.
+- Improved the located-resource particle effect with a cleaner, slower orbit around the search area.
+- High Visibility mode increases particle opacity and lifetime without changing detection range or accuracy.
+- Particle size, density, and visibility can now be configured independently.
+
 ---
 ## v0.9.2
 
