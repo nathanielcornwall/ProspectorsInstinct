@@ -14,7 +14,9 @@ public class ParticleGuide
         this.capi = capi;
     }
 
-    public void Spawn(Vec3d desiredPosition)
+    public void Spawn(
+    Vec3d desiredPosition,
+    double distance = double.MaxValue)
     {
         Vec3d visiblePosition = FindVisiblePosition(desiredPosition);
 
@@ -30,6 +32,14 @@ public class ParticleGuide
             2.0f
         );
 
+        float proximityStrength = CalculateProximityStrength(distance);
+
+float responsiveSize =
+    size * proximityStrength;
+
+float responsiveLife =
+    0.8f * proximityStrength;
+
         var particle = new SimpleParticleProperties
         {
             MinQuantity = 3 * density,
@@ -41,11 +51,11 @@ public class ParticleGuide
             MinVelocity = new Vec3f(-0.02f, 0.04f, -0.02f),
             AddVelocity = new Vec3f(0.04f, 0.05f, 0.04f),
 
-            LifeLength = 0.8f,
+            LifeLength = responsiveLife,
             GravityEffect = 0f,
 
-            MinSize = 0.05f * size,
-            MaxSize = 0.10f * size,
+            MinSize = 0.05f * responsiveSize,
+MaxSize = 0.10f * responsiveSize,
 
             Color = ColorUtil.ToRgba(220, 255, 230, 120),
             ParticleModel = EnumParticleModel.Quad
@@ -75,6 +85,32 @@ public class ParticleGuide
             Spawn(position);
         }
     }
+
+    private static float CalculateProximityStrength(
+    double distance)
+{
+    if (double.IsInfinity(distance) ||
+        distance == double.MaxValue)
+    {
+        return 1.0f;
+    }
+
+    const double farDistance = 12.0;
+    const double nearDistance = 2.0;
+
+    double normalized =
+        (farDistance - distance) /
+        (farDistance - nearDistance);
+
+    normalized = Math.Clamp(
+        normalized,
+        0.0,
+        1.0
+    );
+
+    return 1.0f +
+           (float)normalized * 0.35f;
+}
 
     private Vec3d FindVisiblePosition(Vec3d desiredPosition)
     {

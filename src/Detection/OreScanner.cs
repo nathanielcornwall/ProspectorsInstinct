@@ -140,7 +140,10 @@ public class OreScanner
             direction.Z * 2
         );
 
-        particleGuide?.Spawn(particlePos);
+        particleGuide?.Spawn(
+    particlePos,
+    result.Distance
+);
     }
 
     private static bool HasProspectingPick(
