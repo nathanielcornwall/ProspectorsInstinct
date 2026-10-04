@@ -1,3 +1,4 @@
+using Vintagestory.API.Config;
 using System;
 using ProspectorsInstinct.Config;
 using Vintagestory.API.Client;
@@ -68,12 +69,12 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 1,
                 12,
                 1,
-                " blocks");
+                Lang.Get("prospectorsinstinct:blocks-unit"));
 
         SingleComposer
             .GetDynamicText("scanRadiusLabel")
             .SetNewText(
-                $"Scan Radius: {workingConfig.ScanRadius} blocks",
+                Lang.Get("prospectorsinstinct:scan-radius", workingConfig.ScanRadius),
                 forceRedraw: true);
 
         int densityStep =
@@ -92,7 +93,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer
             .GetDynamicText("particleDensityLabel")
             .SetNewText(
-                $"Particle Density: {workingConfig.ParticleDensity:0.0}x",
+                Lang.Get("prospectorsinstinct:particle-density", workingConfig.ParticleDensity),
                 forceRedraw: true);
 
         int sizeStep =
@@ -111,7 +112,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer
             .GetDynamicText("particleSizeLabel")
             .SetNewText(
-                $"Particle Size: {workingConfig.ParticleSize:0.0}x",
+                Lang.Get("prospectorsinstinct:particle-size", workingConfig.ParticleSize),
                 forceRedraw: true);
 
     }
@@ -284,14 +285,14 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             .AddShadedDialogBG(
                 contentBounds)
             .AddDialogTitleBar(
-                "Prospector's Instinct",
+                Lang.Get("prospectorsinstinct:title"),
                 OnCloseClicked)
             .AddStaticText(
-                "Configure how Prospector's Instinct behaves.",
+                Lang.Get("prospectorsinstinct:description"),
                 CairoFont.WhiteSmallishText(),
                 descriptionBounds)
             .AddStaticText(
-                "Enable Prospector's Instinct",
+                Lang.Get("prospectorsinstinct:enable-mod"),
                 CairoFont.WhiteSmallishText(),
                 enableLabelBounds)
             .AddSwitch(
@@ -299,7 +300,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 enableSwitchBounds,
                 "enableModSwitch")
             .AddDynamicText(
-                $"Scan Radius: {workingConfig.ScanRadius} blocks",
+                Lang.Get("prospectorsinstinct:scan-radius", workingConfig.ScanRadius),
                 CairoFont.WhiteSmallishText(),
                 radiusLabelBounds,
                 "scanRadiusLabel")
@@ -308,7 +309,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 radiusSliderBounds,
                 "scanRadiusSlider")
             .AddDynamicText(
-                $"Particle Density: {workingConfig.ParticleDensity:0.0}x",
+                Lang.Get("prospectorsinstinct:particle-density", workingConfig.ParticleDensity),
                 CairoFont.WhiteSmallishText(),
                 densityLabelBounds,
                 "particleDensityLabel")
@@ -317,7 +318,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 densitySliderBounds,
                 "particleDensitySlider")
             .AddDynamicText(
-                $"Particle Size: {workingConfig.ParticleSize:0.0}x",
+                Lang.Get("prospectorsinstinct:particle-size", workingConfig.ParticleSize),
                 CairoFont.WhiteSmallishText(),
                 sizeLabelBounds,
                 "particleSizeLabel")
@@ -326,7 +327,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 sizeSliderBounds,
                 "particleSizeSlider")
             .AddStaticText(
-                "High Visibility Particles",
+                Lang.Get("prospectorsinstinct:high-visibility"),
                 CairoFont.WhiteSmallishText(),
                 highVisibilityLabelBounds)
             .AddSwitch(
@@ -334,7 +335,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 highVisibilitySwitchBounds,
                 "highVisibilitySwitch")
             .AddStaticText(
-                "Require Prospecting Pick",
+                Lang.Get("prospectorsinstinct:require-pick"),
                 CairoFont.WhiteSmallishText(),
                 pickLabelBounds)
             .AddSwitch(
@@ -346,7 +347,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         {
             SingleComposer
                 .AddStaticText(
-                    "Debug Mode",
+                    Lang.Get("prospectorsinstinct:debug-mode"),
                     CairoFont.WhiteSmallishText(),
                     debugLabelBounds)
                 .AddSwitch(
@@ -357,19 +358,19 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
         SingleComposer
             .AddSmallButton(
-                "Detection Settings...",
+                Lang.Get("prospectorsinstinct:detection-button"),
                 OnDetectionSettingsClicked,
                 detectionButtonBounds)
             .AddSmallButton(
-                "Reset to Defaults",
+                Lang.Get("prospectorsinstinct:reset-defaults"),
                 OnResetDefaultsClicked,
                 resetButtonBounds)
             .AddSmallButton(
-                "Save",
+                Lang.Get("prospectorsinstinct:save"),
                 OnSaveClicked,
                 saveButtonBounds)
             .AddSmallButton(
-                "Cancel",
+                Lang.Get("prospectorsinstinct:cancel"),
                 OnCancelClicked,
                 cancelButtonBounds)
             .Compose();
@@ -400,7 +401,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 1,
                 12,
                 1,
-                " blocks");
+                Lang.Get("prospectorsinstinct:blocks-unit"));
 
         int densityStep =
             (int)Math.Round(
@@ -458,7 +459,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer
             .GetDynamicText("scanRadiusLabel")
             .SetNewText(
-                $"Scan Radius: {radius} blocks",
+                Lang.Get("prospectorsinstinct:scan-radius", radius),
                 forceRedraw: true);
 
         capi.Logger.Notification(
@@ -477,7 +478,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer
             .GetDynamicText("particleDensityLabel")
             .SetNewText(
-                $"Particle Density: {workingConfig.ParticleDensity:0.0}x",
+                Lang.Get("prospectorsinstinct:particle-density", workingConfig.ParticleDensity),
                 forceRedraw: true);
 
         capi.Logger.Notification(
@@ -496,7 +497,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer
             .GetDynamicText("particleSizeLabel")
             .SetNewText(
-                $"Particle Size: {workingConfig.ParticleSize:0.0}x",
+                Lang.Get("prospectorsinstinct:particle-size", workingConfig.ParticleSize),
                 forceRedraw: true);
 
         capi.Logger.Notification(

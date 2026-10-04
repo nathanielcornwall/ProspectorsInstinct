@@ -1,3 +1,4 @@
+using Vintagestory.API.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,10 +142,10 @@ ElementBounds disableAllButtonBounds =
                 dialogBounds)
             .AddShadedDialogBG(contentBounds)
             .AddDialogTitleBar(
-                "Detection Settings",
+                Lang.Get("prospectorsinstinct:detection-title"),
                 OnCloseClicked)
             .AddStaticText(
-                "Detectable Resources",
+                Lang.Get("prospectorsinstinct:resources-title"),
                 CairoFont.WhiteSmallishText(),
                 descriptionBounds)
             .BeginChildElements()
@@ -162,15 +163,15 @@ ElementBounds disableAllButtonBounds =
     scrollbarBounds,
     "oreScrollbar")
 .AddSmallButton(
-    "Enable All",
+    Lang.Get("prospectorsinstinct:enable-all"),
     OnEnableAllClicked,
     enableAllButtonBounds)
 .AddSmallButton(
-    "Disable All",
+    Lang.Get("prospectorsinstinct:disable-all"),
     OnDisableAllClicked,
     disableAllButtonBounds)
 .AddSmallButton(
-    "Close",
+    Lang.Get("prospectorsinstinct:close"),
     OnCloseButtonClicked,
     closeButtonBounds)
             .EndChildElements();
@@ -227,10 +228,10 @@ ElementBounds disableAllButtonBounds =
                 .WithParent(scrollContainerBounds);
             var disableBounds = ElementBounds.Fixed(340, currentY, 90, 30)
                 .WithParent(scrollContainerBounds);
-            container.Add(new GuiElementTextButton(capi, "Enable", CairoFont.WhiteSmallishText(),
+            container.Add(new GuiElementTextButton(capi, Lang.Get("prospectorsinstinct:enable-category"), CairoFont.WhiteSmallishText(),
                 CairoFont.WhiteSmallishText(), () => SetCategory(category, true),
                 enableBounds, EnumButtonStyle.Small));
-            container.Add(new GuiElementTextButton(capi, "Disable", CairoFont.WhiteSmallishText(),
+            container.Add(new GuiElementTextButton(capi, Lang.Get("prospectorsinstinct:disable-category"), CairoFont.WhiteSmallishText(),
                 CairoFont.WhiteSmallishText(), () => SetCategory(category, false),
                 disableBounds, EnumButtonStyle.Small));
 
@@ -264,7 +265,9 @@ ElementBounds disableAllButtonBounds =
         GuiElementStaticText label =
             new(
                 capi,
-                oreName,
+                Lang.HasTranslation("prospectorsinstinct:resource-" + ore.RuntimeName)
+                    ? Lang.Get("prospectorsinstinct:resource-" + ore.RuntimeName)
+                    : oreName,
                 EnumTextOrientation.Left,
                 labelBounds,
                 CairoFont.WhiteSmallishText());
@@ -295,25 +298,25 @@ private static string GetCategoryDisplayName(
     return category switch
     {
         OreCategory.Metal =>
-            "Metals",
+            Lang.Get("prospectorsinstinct:category-metal"),
 
         OreCategory.PreciousMetal =>
-            "Precious Metals",
+            Lang.Get("prospectorsinstinct:category-preciousmetal"),
 
         OreCategory.Industrial =>
-            "Industrial Minerals",
+            Lang.Get("prospectorsinstinct:category-industrial"),
 
         OreCategory.Chemical =>
-            "Chemical Minerals",
+            Lang.Get("prospectorsinstinct:category-chemical"),
 
         OreCategory.Fuel =>
-            "Fuels",
+            Lang.Get("prospectorsinstinct:category-fuel"),
 
         OreCategory.Gemstone =>
-            "Gemstones",
+            Lang.Get("prospectorsinstinct:category-gemstone"),
 
         OreCategory.Misc =>
-            "Other",
+            Lang.Get("prospectorsinstinct:category-misc"),
 
         _ =>
             category.ToString()

@@ -1,3 +1,4 @@
+using Vintagestory.API.Config;
 using System;
 using System.Collections.Generic;
 using ProspectorsInstinct.Config;
@@ -51,7 +52,7 @@ public class ProspectorsInstinctModSystem : ModSystem
 
     capi.Input.RegisterHotKey(
         "prospectorsinstinct-config",
-        "Open Prospector's Instinct configuration",
+        Lang.Get("prospectorsinstinct:config-hotkey"),
         GlKeys.P,
         HotkeyType.GUIOrOtherControls
     );
