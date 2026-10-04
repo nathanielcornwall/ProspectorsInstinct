@@ -1,131 +1,43 @@
-Write-Host ""
-Write-Host "=== Prospector's Instinct Packaging ===" -ForegroundColor Cyan
-Write-Host ""
+$ErrorActionPreference = "Stop"
+$projectRoot = $PSScriptRoot
+$version = (Get-Content -LiteralPath (Join-Path $projectRoot "modinfo.json") -Raw | ConvertFrom-Json).version
+$releaseRoot = Join-Path $projectRoot "release"
+$stagingDir = Join-Path $releaseRoot "release-staging"
+$zipPath = Join-Path $releaseRoot "ProspectorsInstinct-v$version.zip"
+$pendingZip = Join-Path $releaseRoot "ProspectorsInstinct-pending-release.zip"
 
-$version = "0.9.3"
-$zipName = "ProspectorsInstinct-v$version.zip"
-
-$releaseRoot = ".\release"
-$stagingDir = "$releaseRoot\v$version"
-$zipPath = "$releaseRoot\$zipName"
-
-$dllPath = ".\bin\Release\net10.0\ProspectorsInstinct.dll"
-$modInfoPath = ".\modinfo.json"
-
-# -----------------------------
-# Build
-# -----------------------------
-
-Write-Host "Building Release configuration..." -ForegroundColor Yellow
-
-dotnet build -c Release
-
-if ($LASTEXITCODE -ne 0)
-{
-    Write-Host ""
-    Write-Host "Build failed. Packaging aborted." -ForegroundColor Red
-    exit 1
+# Restrict recursive cleanup to this script's one disposable staging folder.
+function Remove-ReleaseStaging {
+    $resolved = [System.IO.Path]::GetFullPath($stagingDir)
+    $expected = [System.IO.Path]::GetFullPath((Join-Path $projectRoot "release\release-staging"))
+    if ($resolved -ne $expected) { throw "Unexpected staging path: $resolved" }
+    if (Test-Path -LiteralPath $resolved) {
+        Remove-Item -LiteralPath $resolved -Recurse -Force
+    }
 }
 
-# -----------------------------
-# Verify required files
-# -----------------------------
+dotnet build (Join-Path $projectRoot "ProspectorsInstinct.csproj") -c Release
+if ($LASTEXITCODE -ne 0) { throw "Build failed; previous release package retained." }
 
-if (-not (Test-Path $dllPath))
-{
-    Write-Host "Release DLL not found: $dllPath" -ForegroundColor Red
-    exit 1
+Remove-ReleaseStaging
+try {
+    New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $projectRoot "bin\Release\net10.0\ProspectorsInstinct.dll") -Destination $stagingDir
+    Copy-Item -LiteralPath (Join-Path $projectRoot "assets") -Destination (Join-Path $stagingDir "assets") -Recurse
+    $testInfo = Get-Content -LiteralPath (Join-Path $projectRoot "modinfo.json") -Raw | ConvertFrom-Json
+    $testInfo | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $stagingDir "modinfo.json") -Encoding utf8
+    Compress-Archive -Path (Join-Path $stagingDir "*") -DestinationPath $pendingZip -Force
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($pendingZip)
+    try {
+        foreach ($required in @("modinfo.json", "ProspectorsInstinct.dll", "assets/prospectorsinstinct/lang/en.json")) {
+            if ($archive.Entries.FullName -notcontains $required) { throw "Package missing $required" }
+        }
+    } finally { $archive.Dispose() }
+    Move-Item -LiteralPath $pendingZip -Destination $zipPath -Force
+    Write-Output "Verified release package: $zipPath"
+} finally {
+    Remove-ReleaseStaging
+    if (Test-Path -LiteralPath $pendingZip) { Remove-Item -LiteralPath $pendingZip -Force }
 }
-
-if (-not (Test-Path $modInfoPath))
-{
-    Write-Host "modinfo.json not found." -ForegroundColor Red
-    exit 1
-}
-
-# -----------------------------
-# Prepare staging directory
-# -----------------------------
-
-Remove-Item $stagingDir -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
-
-New-Item `
-    -ItemType Directory `
-    -Path $stagingDir `
-    -Force | Out-Null
-
-Copy-Item `
-    $modInfoPath `
-    "$stagingDir\modinfo.json"
-
-Copy-Item `
-    $dllPath `
-    "$stagingDir\ProspectorsInstinct.dll"
-
-# -----------------------------
-# Create package
-# -----------------------------
-
-Compress-Archive `
-    -Path `
-        "$stagingDir\modinfo.json",
-        "$stagingDir\ProspectorsInstinct.dll" `
-    -DestinationPath $zipPath
-
-if (-not (Test-Path $zipPath))
-{
-    Write-Host "Package creation failed." -ForegroundColor Red
-    exit 1
-}
-
-# -----------------------------
-# Verify package contents
-# -----------------------------
-
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-
-$zip = [System.IO.Compression.ZipFile]::OpenRead(
-    (Resolve-Path $zipPath)
-)
-
-Write-Host ""
-Write-Host "Package contents:" -ForegroundColor Cyan
-
-$zip.Entries |
-    Select-Object FullName, Length |
-    Format-Table -AutoSize
-
-$zip.Dispose()
-
-# -----------------------------
-# Copy to Vintage Story
-# -----------------------------
-
-$modsFolder =
-    "$env:APPDATA\VintagestoryData\Mods"
-
-if (Test-Path $modsFolder)
-{
-    Copy-Item `
-        $zipPath `
-        "$modsFolder\$zipName" `
-        -Force
-
-    Write-Host "Copied package to Vintage Story Mods folder." -ForegroundColor Green
-}
-else
-{
-    Write-Host "Vintage Story Mods folder was not found." -ForegroundColor Yellow
-}
-
-# -----------------------------
-# Complete
-# -----------------------------
-
-Write-Host ""
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "Package Complete!" -ForegroundColor Green
-Write-Host "Version : $version"
-Write-Host "ZIP     : $zipPath"
-Write-Host "========================================" -ForegroundColor Green

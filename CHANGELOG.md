@@ -2,6 +2,26 @@
 
 All notable changes to Prospector's Instinct will be documented in this file.
 
+## v0.9.4 — Usability & Foundations
+
+### Added
+
+- Configuration schema versioning and migration that preserve existing resource choices and add missing resource defaults.
+- Reset to Defaults in the configuration menu; Save applies the reset and Cancel discards it.
+- Enable and Disable buttons for individual resource categories, alongside the existing global controls.
+- English language assets for menu text, resource names, category headings, and the configuration hotkey, providing a foundation for community translations.
+
+### Improved
+
+- Validate scan radius, scan interval, particle density, and particle size when loading and saving configuration.
+- Repair null resource maps and preserve custom resource entries during migration.
+- Leave unreadable configuration files unchanged during startup and avoid automatically rewriting configuration from a newer schema.
+- Include language assets in release packages and keep a single latest test ZIP with automatic staging cleanup.
+
+Existing particle guidance, detection range limits, and staff-only Debug Mode behavior remain unchanged.
+
+---
+
 ## v0.9.3
 
 ### Added

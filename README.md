@@ -1,6 +1,6 @@
 # Prospector's Instinct
 
-> **Current Version:** v0.7.0  
+> **Current Version:** v0.9.4
 > **Vintage Story:** 1.22.3  
 > **License:** MIT
 
@@ -18,6 +18,11 @@ This mod is designed to complement the vanilla prospecting experience, not repla
 - Runtime Ore Database
 - Automatic ore discovery and parsing
 - Configurable ore detection
+- In-game settings menu (default hotkey: **P**) with Save and Cancel
+- Particle density, size, and High Visibility options
+- Scrollable resource categories with individual and bulk controls
+- Reset to Defaults and automatic configuration migration
+- English localization assets for community translations
 - JSON database export for diagnostics
 - Multiplayer compatible
 - Lightweight client-side design
@@ -42,7 +47,7 @@ VintagestoryData/Mods
 ```
 
 3. Launch Vintage Story.
-4. Configure the mod (optional) using:
+4. Press **P** to configure the mod in-game. Click **Save** to apply changes or **Cancel** to discard them. The configuration file is stored at:
 
 ```
 VintagestoryData/ModConfig/ProspectorsInstinctConfig.json
@@ -57,11 +62,18 @@ The configuration file allows you to customize:
 - Enable or disable the mod
 - Scan radius
 - Particle density
-- Debug mode
+- Particle size and High Visibility
+- Debug mode (moderators and administrators only)
 - Prospecting Pick requirement
 - Individual ore detection
 
 No code changes are required to customize the mod.
+
+**Reset to Defaults** resets the editable settings and known resource choices. Changes only take effect after **Save**. Enable/Disable buttons beside a category affect that category; **Enable All / Disable All** affect the full displayed list.
+
+Older configuration files migrate automatically while retaining your choices. Invalid numeric values are repaired within the supported ranges. Resource display translations do not change saved configuration keys.
+
+English UI strings are in `assets/prospectorsinstinct/lang/en.json`. To contribute a translation, add a language JSON with the same keys and preserve formatting placeholders such as `{0}` and `{0:0.0}`.
 
 ---
 
@@ -111,28 +123,13 @@ Providing these files makes diagnosing issues significantly faster.
 
 ## Roadmap
 
-### v0.7.0
+See [ROADMAP.md](ROADMAP.md) for completed updates and remaining goals toward v1.0.
 
-- ✅ Runtime Ore Database
-- ✅ Automatic ore parsing
-- ✅ JSON database export
-- ✅ Improved ore compatibility
-- ✅ GitHub Issue Tracker
+## Development packaging
 
-### v0.8.0
+Run `./package-test.ps1 -TestVersion "0.9.4-dev.4"` for an incremental test package. It replaces `release/ProspectorsInstinct-latest-test.zip` after verification and removes staging files.
 
-- Ore categories (Metal, Gem, Fuel, Salt, etc.)
-- Enhanced particle guidance
-- Expanded mod compatibility
-- Additional configuration options
-- Performance optimizations
-
-### Future
-
-- Localization support
-- Developer diagnostics
-- Optional particle styles
-- Community compatibility packs
+Run `./package.ps1` for the version declared in `modinfo.json`. Packaging builds and verifies the ZIP locally. Install only one Prospector's Instinct ZIP in the game's Mods folder at a time. Public release follows the final in-game test and approval.
 
 ---
 
