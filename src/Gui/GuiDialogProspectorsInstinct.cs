@@ -35,6 +35,13 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         detectionDialog?.Dispose();
         detectionDialog = null;
 
+        RefreshControls();
+
+        return base.TryOpen();
+    }
+
+    private void RefreshControls()
+    {
         SingleComposer
             .GetSwitch("enableModSwitch")
             .On = workingConfig.Enabled;
@@ -107,7 +114,6 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 $"Particle Size: {workingConfig.ParticleSize:0.0}x",
                 forceRedraw: true);
 
-        return base.TryOpen();
     }
 
     private void ComposeDialog()
@@ -255,6 +261,8 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
         // ---------- Buttons ----------
 
+        ElementBounds resetButtonBounds = ElementBounds.Fixed(20, 680, 230, 35);
+
         ElementBounds saveButtonBounds =
             ElementBounds.Fixed(
                 330,
@@ -352,6 +360,10 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 "Detection Settings...",
                 OnDetectionSettingsClicked,
                 detectionButtonBounds)
+            .AddSmallButton(
+                "Reset to Defaults",
+                OnResetDefaultsClicked,
+                resetButtonBounds)
             .AddSmallButton(
                 "Save",
                 OnSaveClicked,
@@ -541,6 +553,25 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             detectionDialog.TryOpen();
         }
 
+        return true;
+    }
+
+    private bool OnResetDefaultsClicked()
+    {
+        detectionDialog?.TryClose();
+        detectionDialog?.Dispose();
+        detectionDialog = null;
+
+        var defaults = new ProspectorsInstinctConfig();
+        defaults.Normalize();
+        // Keep settings for resources unknown to this version and retain future schema markers.
+        foreach (var entry in workingConfig.DetectOres)
+        {
+            defaults.DetectOres.TryAdd(entry.Key, entry.Value);
+        }
+        defaults.ConfigVersion = workingConfig.ConfigVersion;
+        workingConfig.CopyFrom(defaults);
+        RefreshControls();
         return true;
     }
 
