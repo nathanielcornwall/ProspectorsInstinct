@@ -206,7 +206,7 @@ ElementBounds disableAllButtonBounds =
                 ElementBounds.Fixed(
                         0,
                         currentY + 4,
-                        430,
+                        230,
                         25)
                     .WithParent(
                         scrollContainerBounds);
@@ -221,6 +221,18 @@ ElementBounds disableAllButtonBounds =
                     CairoFont.WhiteSmallishText());
 
             container.Add(header);
+
+            OreCategory category = ore.Category;
+            var enableBounds = ElementBounds.Fixed(240, currentY, 90, 30)
+                .WithParent(scrollContainerBounds);
+            var disableBounds = ElementBounds.Fixed(340, currentY, 90, 30)
+                .WithParent(scrollContainerBounds);
+            container.Add(new GuiElementTextButton(capi, "Enable", CairoFont.WhiteSmallishText(),
+                CairoFont.WhiteSmallishText(), () => SetCategory(category, true),
+                enableBounds, EnumButtonStyle.Small));
+            container.Add(new GuiElementTextButton(capi, "Disable", CairoFont.WhiteSmallishText(),
+                CairoFont.WhiteSmallishText(), () => SetCategory(category, false),
+                disableBounds, EnumButtonStyle.Small));
 
             currentY += CategoryHeaderHeight;
         }
@@ -347,6 +359,16 @@ private void SetAllOres(bool enabled)
     capi.Logger.Notification(
         "[Prospector's Instinct] All detectable resources: {0}",
         enabled);
+}
+
+private bool SetCategory(OreCategory category, bool enabled)
+{
+    foreach (var ore in displayedOres.Where(ore => ore.Category == category))
+    {
+        workingConfig.DetectOres[ore.DisplayName] = enabled;
+        oreSwitches[ore.DisplayName].On = enabled;
+    }
+    return true;
 }
 
 private bool OnEnableAllClicked()
