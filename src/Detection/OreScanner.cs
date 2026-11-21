@@ -157,8 +157,8 @@ public class OreScanner : IDisposable
         Vec3d playerPos =
             entity.Pos.XYZ.Add(0, 1.5, 0);
 
-        Vec3d orePos =
-            result.Position.ToVec3d().Add(0.5, 0.5, 0.5);
+        BlockPos oreBlock = result.Position;
+        Vec3d orePos = new(oreBlock.X + 0.5, oreBlock.InternalY + 0.5, oreBlock.Z + 0.5);
 
         double horizontalDistance = Math.Sqrt(
             Math.Pow(orePos.X - playerPos.X, 2) +

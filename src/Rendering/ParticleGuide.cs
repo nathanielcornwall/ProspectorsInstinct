@@ -23,7 +23,6 @@ public class ParticleGuide
         Vec3d visiblePosition =
             FindVisiblePosition(desiredPosition);
 
-
         var config = ProspectorsInstinctModSystem.Config;
         float density = config.ParticleDensity;
         float size = config.ParticleSize;
@@ -119,7 +118,6 @@ public class ParticleGuide
     private void SpawnLocatedParticle(
         Vec3d position, int color, float density, float size, bool highVisibility)
     {
-
         float lifeLength =
             highVisibility
                 ? 1.2f
@@ -244,8 +242,7 @@ public class ParticleGuide
         Vec3d direction =
             difference.Normalize();
         BlockPos sample = player.Entity.Pos.AsBlockPos;
-        BlockPos previous = sample.Copy();
-        bool hasPrevious = false;
+        (int X, int Y, int Z)? previous = null;
         var accessor = capi.World.BlockAccessor;
 
         const double stepSize = 0.20;
@@ -262,32 +259,25 @@ public class ParticleGuide
             travelled <= distance;
             travelled += stepSize)
         {
-            Vec3d testPosition =
-                eyePosition.AddCopy(
-                    direction.X * travelled,
-                    direction.Y * travelled,
-                    direction.Z * travelled
-                );
-
-            sample.Set((int)Math.Floor(testPosition.X),
-                (int)Math.Floor(testPosition.Y), (int)Math.Floor(testPosition.Z));
-            if (!hasPrevious || !sample.Equals(previous))
+            double x = eyePosition.X + direction.X * travelled;
+            double y = eyePosition.Y + direction.Y * travelled;
+            double z = eyePosition.Z + direction.Z * travelled;
+            var voxel = ((int)Math.Floor(x), (int)Math.Floor(y), (int)Math.Floor(z));
+            if (voxel != previous)
             {
+                sample.SetAndCorrectDimension(voxel.Item1, voxel.Item2, voxel.Item3);
                 var block = accessor.GetBlock(sample);
                 if (block != null && block.BlockMaterial != EnumBlockMaterial.Air)
                 {
                     return lastVisiblePosition;
                 }
 
-                previous.Set(sample.X, sample.Y, sample.Z);
-                hasPrevious = true;
+                previous = voxel;
             }
 
-            lastVisiblePosition =
-                testPosition;
+            lastVisiblePosition.Set(x, y, z);
         }
 
         return desiredPosition;
     }
-
 }
