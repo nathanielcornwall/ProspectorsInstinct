@@ -259,6 +259,10 @@ public class ParticleGuide
 
         Vec3d direction =
             difference.Normalize();
+        BlockPos sample = player.Entity.Pos.AsBlockPos;
+        BlockPos previous = sample.Copy();
+        bool hasPrevious = false;
+        var accessor = capi.World.BlockAccessor;
 
         const double stepSize = 0.20;
 
@@ -281,9 +285,18 @@ public class ParticleGuide
                     direction.Z * travelled
                 );
 
-            if (IsInsideSolidBlock(testPosition))
+            sample.Set((int)Math.Floor(testPosition.X),
+                (int)Math.Floor(testPosition.Y), (int)Math.Floor(testPosition.Z));
+            if (!hasPrevious || !sample.Equals(previous))
             {
-                return lastVisiblePosition;
+                var block = accessor.GetBlock(sample);
+                if (block != null && block.BlockMaterial != EnumBlockMaterial.Air)
+                {
+                    return lastVisiblePosition;
+                }
+
+                previous.Set(sample.X, sample.Y, sample.Z);
+                hasPrevious = true;
             }
 
             lastVisiblePosition =
@@ -293,21 +306,4 @@ public class ParticleGuide
         return desiredPosition;
     }
 
-    private bool IsInsideSolidBlock(
-        Vec3d position)
-    {
-        BlockPos blockPos = new(
-            (int)Math.Floor(position.X),
-            (int)Math.Floor(position.Y),
-            (int)Math.Floor(position.Z)
-        );
-
-        Block block =
-            capi.World.BlockAccessor
-                .GetBlock(blockPos);
-
-        return block != null &&
-               block.BlockMaterial !=
-               EnumBlockMaterial.Air;
-    }
 }
