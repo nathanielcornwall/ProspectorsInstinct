@@ -17,14 +17,14 @@ public static class ConfigManager
         catch (System.Exception exception)
         {
             api.Logger.Warning("[Prospector's Instinct] Failed to load config; leaving the original file unchanged: {0}", exception.Message);
-            var defaults = new ProspectorsInstinctConfig();
+            var defaults = new ProspectorsInstinctConfig { Preset = ParticlePreset.Balanced };
             defaults.Normalize();
             return defaults;
         }
 
         if (config == null)
         {
-            config = new ProspectorsInstinctConfig();
+            config = new ProspectorsInstinctConfig { Preset = ParticlePreset.Balanced };
             config.Normalize();
             api.StoreModConfig(config, ConfigFileName);
             api.Logger.Notification("[Prospector's Instinct] Default config created.");

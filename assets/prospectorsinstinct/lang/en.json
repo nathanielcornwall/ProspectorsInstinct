@@ -1,4 +1,9 @@
 {
+  "particle-preset": "Particle preset",
+  "preset-custom": "Custom",
+  "preset-subtle": "Subtle",
+  "preset-balanced": "Balanced",
+  "preset-highvisibility": "High Visibility",
   "category-colors": "Resource category colors",
   "title": "Prospector's Instinct",
   "description": "Configure how Prospector's Instinct behaves.",

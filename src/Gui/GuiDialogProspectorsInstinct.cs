@@ -1,5 +1,6 @@
 using Vintagestory.API.Config;
 using System;
+using System.Linq;
 using ProspectorsInstinct.Config;
 using Vintagestory.API.Client;
 
@@ -7,6 +8,8 @@ namespace ProspectorsInstinct.Gui;
 
 public sealed class GuiDialogProspectorsInstinct : GuiDialog
 {
+    private static readonly string[] PresetCodes = Enum.GetNames<ParticlePreset>();
+
     private ProspectorsInstinctConfig workingConfig;
 
     private GuiDialogDetectionSettings? detectionDialog;
@@ -43,6 +46,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
     private void RefreshControls()
     {
+        SingleComposer.GetDropDown("particlePreset").SetSelectedIndex((int)workingConfig.Preset);
         SingleComposer
             .GetSwitch("enableModSwitch")
             .On = workingConfig.Enabled;
@@ -180,14 +184,14 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         ElementBounds densityLabelBounds =
             ElementBounds.Fixed(
                 20,
-                235,
+                255,
                 500,
                 25);
 
         ElementBounds densitySliderBounds =
             ElementBounds.Fixed(
                 20,
-                265,
+                280,
                 500,
                 35);
 
@@ -196,7 +200,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         ElementBounds sizeLabelBounds =
             ElementBounds.Fixed(
                 20,
-                320,
+                328,
                 500,
                 25);
 
@@ -312,6 +316,12 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 OnScanRadiusChanged,
                 radiusSliderBounds,
                 "scanRadiusSlider")
+            .AddStaticText(Lang.Get("prospectorsinstinct:particle-preset"),
+                CairoFont.WhiteSmallishText(), ElementBounds.Fixed(20, 217, 200, 26))
+            .AddDropDown(PresetCodes, PresetCodes.Select(code =>
+                    Lang.Get("prospectorsinstinct:preset-" + code.ToLowerInvariant())).ToArray(),
+                (int)workingConfig.Preset, OnPresetChanged,
+                ElementBounds.Fixed(230, 216, 290, 28), "particlePreset")
             .AddDynamicText(
                 Lang.Get("prospectorsinstinct:particle-density", workingConfig.ParticleDensity),
                 CairoFont.WhiteSmallishText(),
@@ -443,6 +453,21 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 string.Empty);
     }
 
+    private void OnPresetChanged(string code, bool selected)
+    {
+        if (selected && Enum.TryParse(code, out ParticlePreset preset))
+        {
+            workingConfig.ApplyPreset(preset);
+            RefreshControls();
+        }
+    }
+
+    private void MarkParticleSettingsCustom()
+    {
+        workingConfig.Preset = ParticlePreset.Custom;
+        SingleComposer.GetDropDown("particlePreset").SetSelectedIndex((int)ParticlePreset.Custom);
+    }
+
     private bool CanUseDebugMode()
     {
         var player = capi.World.Player;
@@ -485,6 +510,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
     private bool OnParticleDensityChanged(int densityStep)
     {
+        MarkParticleSettingsCustom();
         workingConfig.ParticleDensity =
             densityStep / 10f;
 
@@ -504,6 +530,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
     private bool OnParticleSizeChanged(int sizeStep)
     {
+        MarkParticleSettingsCustom();
         workingConfig.ParticleSize =
             sizeStep / 10f;
 
@@ -523,6 +550,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
     private void OnHighVisibilityChanged(bool enabled)
     {
+        MarkParticleSettingsCustom();
         workingConfig.HighVisibilityParticles = enabled;
 
         capi.Logger.Notification(
@@ -576,7 +604,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         detectionDialog?.Dispose();
         detectionDialog = null;
 
-        var defaults = new ProspectorsInstinctConfig();
+        var defaults = new ProspectorsInstinctConfig { Preset = ParticlePreset.Balanced };
         defaults.Normalize();
         // Keep settings for resources unknown to this version and retain future schema markers.
         foreach (var entry in workingConfig.DetectOres)
