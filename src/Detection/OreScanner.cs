@@ -16,6 +16,7 @@ public class OreScanner
 
     private OreDetector? detector;
     private ParticleGuide? particleGuide;
+    private bool guidanceActive;
 
     public OreScanner(
         ICoreAPI api,
@@ -63,6 +64,7 @@ public class OreScanner
     {
         if (!ProspectorsInstinctModSystem.Config.Enabled)
         {
+            guidanceActive = false;
             return;
         }
 
@@ -75,12 +77,14 @@ public class OreScanner
 
         if (player?.Entity == null)
         {
+            guidanceActive = false;
             return;
         }
 
         if (ProspectorsInstinctModSystem.Config.RequireProspectingPick &&
             !HasProspectingPick(capi))
         {
+            guidanceActive = false;
             return;
         }
 
@@ -93,8 +97,12 @@ public class OreScanner
 
         if (result == null)
         {
+            guidanceActive = false;
             return;
         }
+
+        bool pulse = !guidanceActive;
+        guidanceActive = true;
 
         if (ProspectorsInstinctModSystem.Config.DebugMode &&
     player.HasPrivilege("kick"))
@@ -125,7 +133,7 @@ public class OreScanner
         if (playerIsAboveOre)
         {
             particleGuide?.SpawnLocated(
-                player.Entity.Pos.XYZ, result.OreName
+                player.Entity.Pos.XYZ, result.OreName, pulse
             );
 
             return;
@@ -142,7 +150,7 @@ public class OreScanner
 
         particleGuide?.Spawn(
     particlePos,
-    result.Distance, result.OreName
+    result.Distance, result.OreName, pulse
 );
     }
 

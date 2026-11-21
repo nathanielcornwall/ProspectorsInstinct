@@ -18,7 +18,7 @@ public class ParticleGuide
 
     public void Spawn(
         Vec3d desiredPosition,
-        double distance = double.MaxValue, string? oreName = null)
+        double distance = double.MaxValue, string? oreName = null, bool pulse = false)
     {
         Vec3d visiblePosition =
             FindVisiblePosition(desiredPosition);
@@ -34,7 +34,7 @@ public class ParticleGuide
         density *= 0.85f + proximity * 0.15f;
 
         float responsiveSize =
-            size * proximityStrength;
+            size * proximityStrength * (pulse ? 1.15f : 1f);
 
         float responsiveLife =
             0.8f * proximityStrength;
@@ -82,7 +82,7 @@ public class ParticleGuide
         capi.World.SpawnParticles(particle);
     }
 
-    public void SpawnLocated(Vec3d playerPosition, string? oreName = null)
+    public void SpawnLocated(Vec3d playerPosition, string? oreName = null, bool pulse = false)
     {
         double time =
             capi.World.ElapsedMilliseconds / 1000.0;
@@ -112,7 +112,7 @@ public class ParticleGuide
             );
 
             SpawnLocatedParticle(position, color, config.ParticleDensity,
-                config.ParticleSize, config.HighVisibilityParticles);
+                config.ParticleSize * (pulse ? 1.15f : 1f), config.HighVisibilityParticles);
         }
     }
 
