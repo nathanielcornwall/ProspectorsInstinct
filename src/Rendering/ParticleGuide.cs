@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using ProspectorsInstinct.Metadata;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -16,26 +18,17 @@ public class ParticleGuide
 
     public void Spawn(
         Vec3d desiredPosition,
-        double distance = double.MaxValue)
+        double distance = double.MaxValue, string? oreName = null)
     {
         Vec3d visiblePosition =
             FindVisiblePosition(desiredPosition);
 
-        float density = Math.Clamp(
-            ProspectorsInstinctModSystem.Config.ParticleDensity,
-            0.1f,
-            2.0f
-        );
 
-        float size = Math.Clamp(
-            ProspectorsInstinctModSystem.Config.ParticleSize,
-            0.5f,
-            2.0f
-        );
-
-        bool highVisibility =
-            ProspectorsInstinctModSystem.Config.HighVisibilityParticles;
-
+        var config = ProspectorsInstinctModSystem.Config;
+        float density = config.ParticleDensity;
+        float size = config.ParticleSize;
+        bool highVisibility = config.HighVisibilityParticles;
+        int color = GetColor(oreName, highVisibility ? 200 : 120);
         float proximity = CalculateProximity(distance);
         float proximityStrength = 1f + proximity * 0.35f;
         density *= 0.85f + proximity * 0.15f;
@@ -50,11 +43,6 @@ public class ParticleGuide
         {
             responsiveLife *= 1.35f;
         }
-
-        int alpha =
-            highVisibility
-                ? 200
-                : 120;
 
         var particle = new SimpleParticleProperties
         {
@@ -86,12 +74,7 @@ public class ParticleGuide
             MinSize = 0.05f * responsiveSize,
             MaxSize = 0.10f * responsiveSize,
 
-            Color = ColorUtil.ToRgba(
-                alpha,
-                255,
-                230,
-                120
-            ),
+            Color = color,
 
             ParticleModel = EnumParticleModel.Quad
         };
@@ -99,11 +82,13 @@ public class ParticleGuide
         capi.World.SpawnParticles(particle);
     }
 
-    public void SpawnLocated(Vec3d playerPosition)
+    public void SpawnLocated(Vec3d playerPosition, string? oreName = null)
     {
         double time =
             capi.World.ElapsedMilliseconds / 1000.0;
 
+        var config = ProspectorsInstinctModSystem.Config;
+        int color = GetColor(oreName, config.HighVisibilityParticles ? 200 : 120);
         const double radius = 1.0;
         const double orbitSpeed = 1.5;
         const int orbitPoints = 4;
@@ -126,37 +111,19 @@ public class ParticleGuide
                     Math.Sin(angle) * radius
             );
 
-            SpawnLocatedParticle(position);
+            SpawnLocatedParticle(position, color, config.ParticleDensity,
+                config.ParticleSize, config.HighVisibilityParticles);
         }
     }
 
     private void SpawnLocatedParticle(
-        Vec3d position)
+        Vec3d position, int color, float density, float size, bool highVisibility)
     {
-        float density = Math.Clamp(
-            ProspectorsInstinctModSystem.Config.ParticleDensity,
-            0.1f,
-            2.0f
-        );
-
-        float size = Math.Clamp(
-            ProspectorsInstinctModSystem.Config.ParticleSize,
-            0.5f,
-            2.0f
-        );
-
-        bool highVisibility =
-            ProspectorsInstinctModSystem.Config.HighVisibilityParticles;
 
         float lifeLength =
             highVisibility
                 ? 1.2f
                 : 0.9f;
-
-        int alpha =
-            highVisibility
-                ? 200
-                : 120;
 
         var particle = new SimpleParticleProperties
         {
@@ -189,17 +156,35 @@ public class ParticleGuide
             MinSize = 0.06f * size,
             MaxSize = 0.11f * size,
 
-            Color = ColorUtil.ToRgba(
-                alpha,
-                255,
-                230,
-                120
-            ),
+            Color = color,
 
             ParticleModel = EnumParticleModel.Quad
         };
 
         capi.World.SpawnParticles(particle);
+    }
+
+    private static int GetColor(string? oreName, int alpha)
+    {
+        OreCategory? category = null;
+        if (ProspectorsInstinctModSystem.Config.ResourceCategoryColors && oreName != null)
+        {
+            category = OreMetadataProvider.GetAll().FirstOrDefault(ore =>
+                string.Equals(ore.DisplayName, oreName, StringComparison.OrdinalIgnoreCase))?.Category;
+        }
+
+        var (red, green, blue) = category switch
+        {
+            OreCategory.Metal => (240, 167, 116),
+            OreCategory.PreciousMetal => (255, 208, 130),
+            OreCategory.Industrial => (160, 206, 230),
+            OreCategory.Chemical => (177, 222, 137),
+            OreCategory.Fuel => (215, 174, 165),
+            OreCategory.Gemstone => (214, 165, 238),
+            _ => (255, 230, 120)
+        };
+
+        return ColorUtil.ToRgba(alpha, red, green, blue);
     }
 
     private static float CalculateProximity(

@@ -125,7 +125,7 @@ public class OreScanner
         if (playerIsAboveOre)
         {
             particleGuide?.SpawnLocated(
-                player.Entity.Pos.XYZ
+                player.Entity.Pos.XYZ, result.OreName
             );
 
             return;
@@ -142,7 +142,7 @@ public class OreScanner
 
         particleGuide?.Spawn(
     particlePos,
-    result.Distance
+    result.Distance, result.OreName
 );
     }
 

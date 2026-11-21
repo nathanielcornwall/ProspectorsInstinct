@@ -48,6 +48,10 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             .On = workingConfig.Enabled;
 
         SingleComposer
+            .GetSwitch("categoryColorsSwitch")
+            .On = workingConfig.ResourceCategoryColors;
+
+        SingleComposer
             .GetSwitch("highVisibilitySwitch")
             .On = workingConfig.HighVisibilityParticles;
 
@@ -361,6 +365,11 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 Lang.Get("prospectorsinstinct:detection-button"),
                 OnDetectionSettingsClicked,
                 detectionButtonBounds)
+            .AddStaticText(
+                Lang.Get("prospectorsinstinct:category-colors"),
+                CairoFont.WhiteSmallishText(), ElementBounds.Fixed(20, 638, 420, 30))
+            .AddSwitch(value => workingConfig.ResourceCategoryColors = value,
+                ElementBounds.Fixed(470, 633, 40, 30), "categoryColorsSwitch")
             .AddSmallButton(
                 Lang.Get("prospectorsinstinct:reset-defaults"),
                 OnResetDefaultsClicked,
@@ -378,6 +387,10 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer
             .GetSwitch("enableModSwitch")
             .On = workingConfig.Enabled;
+
+        SingleComposer
+            .GetSwitch("categoryColorsSwitch")
+            .On = workingConfig.ResourceCategoryColors;
 
         SingleComposer
             .GetSwitch("highVisibilitySwitch")
