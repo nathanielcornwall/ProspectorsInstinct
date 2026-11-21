@@ -2,6 +2,7 @@ using Vintagestory.API.Config;
 using System;
 using System.Linq;
 using ProspectorsInstinct.Config;
+using ProspectorsInstinct.Detection;
 using Vintagestory.API.Client;
 
 namespace ProspectorsInstinct.Gui;
@@ -13,6 +14,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
     private ProspectorsInstinctConfig workingConfig;
 
     private GuiDialogDetectionSettings? detectionDialog;
+    private bool showDebugControls;
 
     public override string ToggleKeyCombinationCode =>
         "prospectorsinstinct-config";
@@ -39,8 +41,13 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         detectionDialog?.Dispose();
         detectionDialog = null;
 
-        RefreshControls();
+        if (showDebugControls != CanUseDebugMode())
+        {
+            SingleComposer.Dispose();
+            ComposeDialog();
+        }
 
+        RefreshControls();
         return base.TryOpen();
     }
 
@@ -63,7 +70,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             .GetSwitch("requirePickSwitch")
             .On = workingConfig.RequireProspectingPick;
 
-        if (CanUseDebugMode())
+        if (showDebugControls)
         {
             SingleComposer
                 .GetSwitch("debugModeSwitch")
@@ -127,6 +134,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
     private void ComposeDialog()
     {
+        showDebugControls = CanUseDebugMode();
         ElementBounds dialogBounds =
             ElementStdBounds
                 .AutosizedMainDialog
@@ -357,7 +365,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
                 pickSwitchBounds,
                 "requirePickSwitch");
 
-        if (CanUseDebugMode())
+        if (showDebugControls)
         {
             SingleComposer
                 .AddStaticText(
@@ -410,7 +418,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
             .GetSwitch("requirePickSwitch")
             .On = workingConfig.RequireProspectingPick;
 
-        if (CanUseDebugMode())
+        if (showDebugControls)
         {
             SingleComposer
                 .GetSwitch("debugModeSwitch")
@@ -468,17 +476,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
         SingleComposer.GetDropDown("particlePreset").SetSelectedIndex((int)ParticlePreset.Custom);
     }
 
-    private bool CanUseDebugMode()
-    {
-        var player = capi.World.Player;
-
-        if (player == null)
-        {
-            return false;
-        }
-
-        return player.HasPrivilege("kick");
-    }
+    private bool CanUseDebugMode() => OreScanner.CanUseDebugMode(capi.World.Player);
 
     private void OnEnabledChanged(bool enabled)
     {
@@ -571,7 +569,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
     private void OnDebugModeChanged(bool enabled)
     {
-        workingConfig.DebugMode = enabled;
+        workingConfig.DebugMode = enabled && CanUseDebugMode();
 
         capi.Logger.Notification(
             "[Prospector's Instinct] Debug Mode changed to {0}.",
@@ -619,6 +617,7 @@ public sealed class GuiDialogProspectorsInstinct : GuiDialog
 
     private bool OnSaveClicked()
     {
+        workingConfig.DebugMode &= CanUseDebugMode();
         ProspectorsInstinctModSystem
             .Config
             .CopyFrom(workingConfig);

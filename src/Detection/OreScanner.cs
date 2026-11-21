@@ -5,43 +5,44 @@ using ProspectorsInstinct.Rendering;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
 
 namespace ProspectorsInstinct.Detection;
 
-public class OreScanner
+public class OreScanner : IDisposable
 {
-    private readonly ICoreAPI api;
+    private readonly ICoreClientAPI capi;
     private readonly Func<IReadOnlyDictionary<int, OreInfo>>
         oreDatabaseProvider;
 
     private OreDetector? detector;
     private ParticleGuide? particleGuide;
     private bool guidanceActive;
+    private long? tickListenerId;
+    private int? lastDimension;
 
     public OreScanner(
-        ICoreAPI api,
+        ICoreClientAPI capi,
         Func<IReadOnlyDictionary<int, OreInfo>> oreDatabaseProvider)
     {
-        this.api = api
-            ?? throw new ArgumentNullException(nameof(api));
+        this.capi = capi
+            ?? throw new ArgumentNullException(nameof(capi));
 
         this.oreDatabaseProvider = oreDatabaseProvider
             ?? throw new ArgumentNullException(
                 nameof(oreDatabaseProvider));
 
-        api.Logger.Notification(
+        capi.Logger.Notification(
             "[Prospector's Instinct] OreScanner initialized."
         );
     }
 
     public void Start()
     {
-        if (api.Side != EnumAppSide.Client)
+        if (detector != null)
         {
             return;
         }
-
-        ICoreClientAPI capi = (ICoreClientAPI)api;
 
         detector = new OreDetector(
             capi,
@@ -50,15 +51,50 @@ public class OreScanner
 
         particleGuide = new ParticleGuide(capi);
 
-        api.Event.RegisterGameTickListener(
+        capi.Event.LevelFinalize += StartScanning;
+        capi.Event.LeaveWorld += StopScanning;
+    }
+
+    private void StartScanning()
+    {
+        if (tickListenerId.HasValue)
+        {
+            return;
+        }
+
+        tickListenerId = capi.Event.RegisterGameTickListener(
             OnScanTick,
             ProspectorsInstinctModSystem.Config.ScanIntervalMs
         );
 
-        api.Logger.Notification(
+        capi.Logger.Notification(
             "[Prospector's Instinct] Client scanner enabled."
         );
     }
+
+    private void StopScanning()
+    {
+        if (tickListenerId is long listenerId)
+        {
+            capi.Event.UnregisterGameTickListener(listenerId);
+            tickListenerId = null;
+        }
+
+        guidanceActive = false;
+        lastDimension = null;
+    }
+
+    public void Dispose()
+    {
+        StopScanning();
+        capi.Event.LevelFinalize -= StartScanning;
+        capi.Event.LeaveWorld -= StopScanning;
+        detector = null;
+        particleGuide = null;
+    }
+
+    internal static bool CanUseDebugMode(IPlayer? player) =>
+        player?.HasPrivilege(Privilege.kick) == true;
 
     private void OnScanTick(float deltaTime)
     {
@@ -68,27 +104,33 @@ public class OreScanner
             return;
         }
 
-        if (api is not ICoreClientAPI capi)
-        {
-            return;
-        }
-
         var player = capi.World.Player;
 
-        if (player?.Entity == null)
+        if (player?.Entity is not { Alive: true } entity)
         {
             guidanceActive = false;
             return;
         }
 
         if (ProspectorsInstinctModSystem.Config.RequireProspectingPick &&
-            !HasProspectingPick(capi))
+            !HasProspectingPick(player))
         {
             guidanceActive = false;
             return;
         }
 
-        BlockPos pos = player.Entity.Pos.AsBlockPos;
+        BlockPos pos = entity.Pos.AsBlockPos;
+        if (lastDimension != pos.dimension)
+        {
+            guidanceActive = false;
+            lastDimension = pos.dimension;
+        }
+
+        if (capi.World.BlockAccessor.GetChunkAtBlockPos(pos) == null)
+        {
+            guidanceActive = false;
+            return;
+        }
 
         OreScanResult? result = detector?.FindNearestOre(
             pos,
@@ -105,16 +147,15 @@ public class OreScanner
         guidanceActive = true;
 
         if (ProspectorsInstinctModSystem.Config.DebugMode &&
-    player.HasPrivilege("kick"))
-{
-    api.Logger.Notification(
-        $"[Prospector's Instinct] Found {result.OreName} " +
-        $"({result.Distance:F1} blocks away)"
-    );
-}
+            CanUseDebugMode(player))
+        {
+            capi.Logger.Notification(
+                $"[Prospector's Instinct] Found {result.OreName} " +
+                $"({result.Distance:F1} blocks away)");
+        }
 
         Vec3d playerPos =
-            player.Entity.Pos.XYZ.Add(0, 1.5, 0);
+            entity.Pos.XYZ.Add(0, 1.5, 0);
 
         Vec3d orePos =
             result.Position.ToVec3d().Add(0.5, 0.5, 0.5);
@@ -133,7 +174,7 @@ public class OreScanner
         if (playerIsAboveOre)
         {
             particleGuide?.SpawnLocated(
-                player.Entity.Pos.XYZ, result.OreName, pulse
+                entity.Pos.XYZ, result.OreName, pulse
             );
 
             return;
@@ -148,31 +189,17 @@ public class OreScanner
             direction.Z * 2
         );
 
-        particleGuide?.Spawn(
-    particlePos,
-    result.Distance, result.OreName, pulse
-);
+        particleGuide?.Spawn(particlePos, result.Distance, result.OreName, pulse);
     }
 
     private static bool HasProspectingPick(
-        ICoreClientAPI capi)
+        IPlayer player)
     {
-        var activeItem = capi.World.Player
-            .InventoryManager
+        var activeItem = player.InventoryManager?
             .ActiveHotbarSlot?
             .Itemstack;
 
-        if (activeItem?.Collectible?.Code == null)
-        {
-            return false;
-        }
-
-        string itemCode = activeItem
-            .Collectible
-            .Code
-            .ToString()
-            .ToLowerInvariant();
-
-        return itemCode.Contains("prospectingpick-");
+        return activeItem?.Collectible?.Code?.Path.StartsWith(
+            "prospectingpick-", StringComparison.OrdinalIgnoreCase) == true;
     }
 }

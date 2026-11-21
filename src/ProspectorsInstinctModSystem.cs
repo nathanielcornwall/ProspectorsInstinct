@@ -27,52 +27,38 @@ public class ProspectorsInstinctModSystem : ModSystem
     private OreScanner? scanner;
     private GuiDialogProspectorsInstinct? configDialog;
 
-    public override void Start(ICoreAPI api)
+    public override void StartClientSide(ICoreClientAPI capi)
     {
-
-        Config = ConfigManager.Load(api);
-
-        scanner = new OreScanner(
-            api,
-            () => oreDatabase
-        );
-
+        base.StartClientSide(capi);
+        Config = ConfigManager.Load(capi);
+        scanner = new OreScanner(capi, () => oreDatabase);
         scanner.Start();
 
-        api.Logger.Notification(
-            "[Prospector's Instinct] Loaded successfully!"
-        );
+        capi.Input.RegisterHotKey(
+            "prospectorsinstinct-config",
+            Lang.Get("prospectorsinstinct:config-hotkey"),
+            GlKeys.P,
+            HotkeyType.GUIOrOtherControls);
 
-    }
-
-    public override void StartClientSide(
-    ICoreClientAPI capi)
-{
-    base.StartClientSide(capi);
-
-    capi.Input.RegisterHotKey(
-        "prospectorsinstinct-config",
-        Lang.Get("prospectorsinstinct:config-hotkey"),
-        GlKeys.P,
-        HotkeyType.GUIOrOtherControls
-    );
-
-    capi.Input.SetHotKeyHandler(
-        "prospectorsinstinct-config",
-        _ =>
+        capi.Input.SetHotKeyHandler("prospectorsinstinct-config", _ =>
         {
-            configDialog ??=
-                new GuiDialogProspectorsInstinct(capi);
+            if (capi.World.Player?.Entity == null)
+            {
+                return false;
+            }
 
+            configDialog ??= new GuiDialogProspectorsInstinct(capi);
             configDialog.Toggle();
             return true;
-        }
-    );
+        });
+    }
 
-    capi.Logger.Notification(
-        "[Prospector's Instinct] Configuration hotkey registered."
-    );
-}
+    public override void Dispose()
+    {
+        scanner?.Dispose();
+        configDialog?.Dispose();
+        base.Dispose();
+    }
 
     public override void AssetsFinalize(ICoreAPI api)
     {
