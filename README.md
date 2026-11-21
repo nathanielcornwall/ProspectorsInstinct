@@ -63,6 +63,8 @@ The configuration file allows you to customize:
 - Scan radius
 - Particle density
 - Particle size and High Visibility
+- Subtle, Balanced, High Visibility, and Custom particle presets
+- Optional resource-category particle colors
 - Debug mode (moderators and administrators only)
 - Prospecting Pick requirement
 - Individual ore detection
@@ -70,6 +72,8 @@ The configuration file allows you to customize:
 No code changes are required to customize the mod.
 
 **Reset to Defaults** resets the editable settings and known resource choices. Changes only take effect after **Save**. Enable/Disable buttons beside a category affect that category; **Enable All / Disable All** affect the full displayed list.
+
+Selecting a preset updates density, size, and visibility. Editing any of those controls switches to Custom. Gold remains the default particle color and the fallback for unclassified resources.
 
 Older configuration files migrate automatically while retaining your choices. Invalid numeric values are repaired within the supported ranges. Resource display translations do not change saved configuration keys.
 
@@ -127,7 +131,7 @@ See [ROADMAP.md](ROADMAP.md) for completed updates and remaining goals toward v1
 
 ## Development packaging
 
-Run `./package-test.ps1 -TestVersion "0.9.4-dev.4"` for an incremental test package. It replaces `release/ProspectorsInstinct-latest-test.zip` after verification and removes staging files.
+Run `./package-test.ps1 -TestVersion "0.9.5-dev.1"` for an incremental test package. It replaces `release/ProspectorsInstinct-latest-test.zip` after verification and removes staging files.
 
 Run `./package.ps1` for the version declared in `modinfo.json`. Packaging builds and verifies the ZIP locally. Install only one Prospector's Instinct ZIP in the game's Mods folder at a time. Public release follows the final in-game test and approval.
 

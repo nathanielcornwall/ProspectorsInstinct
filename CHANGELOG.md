@@ -2,6 +2,23 @@
 
 All notable changes to Prospector's Instinct will be documented in this file.
 
+## v0.9.5 — Enhanced Prospecting & Performance
+
+### Added
+
+- Subtle, Balanced, and High Visibility particle presets. Manual changes to density, size, or visibility switch to Custom. Existing settings migrate as Custom.
+- Optional resource-category particle colors. Unclassified resources use the default gold.
+- A brief particle pulse when guidance begins or resumes after an interruption.
+
+### Improved
+
+- Particle density, size, and lifetime adapt gradually to proximity within the existing scan range.
+- Reduced repeated block reads and allocations during ore scans and particle occlusion checks.
+- Scanning waits for world readiness and stops on disconnect. Guidance uses the current dimension and waits for the local player chunk to load.
+- Debug Mode checks the kick privilege when displaying controls, saving settings, and logging ore detections.
+
+---
+
 ## v0.9.4 — Usability & Foundations
 
 ### Added
