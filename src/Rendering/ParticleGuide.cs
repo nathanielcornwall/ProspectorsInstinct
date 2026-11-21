@@ -36,8 +36,9 @@ public class ParticleGuide
         bool highVisibility =
             ProspectorsInstinctModSystem.Config.HighVisibilityParticles;
 
-        float proximityStrength =
-            CalculateProximityStrength(distance);
+        float proximity = CalculateProximity(distance);
+        float proximityStrength = 1f + proximity * 0.35f;
+        density *= 0.85f + proximity * 0.15f;
 
         float responsiveSize =
             size * proximityStrength;
@@ -201,13 +202,12 @@ public class ParticleGuide
         capi.World.SpawnParticles(particle);
     }
 
-    private static float CalculateProximityStrength(
+    private static float CalculateProximity(
         double distance)
     {
-        if (double.IsInfinity(distance) ||
-            distance == double.MaxValue)
+        if (!double.IsFinite(distance))
         {
-            return 1.0f;
+            return 0f;
         }
 
         const double farDistance = 12.0;
@@ -223,8 +223,7 @@ public class ParticleGuide
             1.0
         );
 
-        return 1.0f +
-               (float)normalized * 0.35f;
+        return (float)(normalized * normalized * (3 - 2 * normalized));
     }
 
     private Vec3d FindVisiblePosition(
