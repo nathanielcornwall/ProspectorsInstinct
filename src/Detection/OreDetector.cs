@@ -77,6 +77,9 @@ public class OreDetector
     {
         OreScanResult? nearest = null;
         int radiusSq = radius * radius;
+        int nearestDistanceSq = radiusSq + 1;
+        BlockPos checkPos = playerPos.Copy();
+        var blockAccessor = capi.World.BlockAccessor;
 
         IReadOnlyDictionary<int, OreInfo> oreDatabase =
             oreDatabaseProvider();
@@ -89,16 +92,14 @@ public class OreDetector
                 {
                     int distSq = x * x + y * y + z * z;
 
-                    if (distSq > radiusSq)
+                    if (distSq >= nearestDistanceSq)
                     {
                         continue;
                     }
 
-                    BlockPos checkPos =
-                        playerPos.AddCopy(x, y, z);
+                    checkPos.Set(playerPos.X + x, playerPos.Y + y, playerPos.Z + z);
 
-                    var block =
-                        capi.World.BlockAccessor.GetBlock(checkPos);
+                    var block = blockAccessor.GetBlock(checkPos);
 
                     if (block?.Code == null)
                     {
@@ -155,6 +156,7 @@ public class OreDetector
                     }
                 }
 
+                    nearestDistanceSq = distSq;
                     double distance = Math.Sqrt(distSq);
 
                     if (nearest == null ||
